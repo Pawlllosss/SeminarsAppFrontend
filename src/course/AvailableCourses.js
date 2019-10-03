@@ -11,7 +11,7 @@ class AvailableCourses extends React.Component {
             courses: []
         };
 
-        this.apiBasePath = 'http://seminars-api.herokuapp.com/';
+        this.apiBasePath = 'https://seminars-api.herokuapp.com/';
         this.coursePath ='course/';
     }
 

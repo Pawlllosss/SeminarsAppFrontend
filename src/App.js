@@ -1,12 +1,12 @@
 import React from 'react';
 import './App.css';
-import LoginForm from "./authentication/LoginForm";
+import SignInForm from "./authentication/SignInForm";
 
 function App() {
   return (
     <div className="App">
     <h1>Login form</h1>
-    <LoginForm/>
+    <SignInForm/>
     </div>
   );
 }
