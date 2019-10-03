@@ -7,7 +7,7 @@ class Navbar extends React.Component {
     navbarLinks() {
         let links = [
             <li key='home'><Link to ="/">Home</Link></li>,
-            <li key='courses'><Link to ="/courses">Courses</Link></li>
+            <li key='courses'><Link to ="/courses">Courses</Link></li>,
         ];
 
         //TODO: tmp - should distinguish between admin and user
@@ -16,6 +16,12 @@ class Navbar extends React.Component {
                 <li key='signOut'><Link to ='signout'>Sign out</Link></li>
             ];
             links.push(authenticatedUserLinks);
+        } else {
+            //for not authenticated
+            const notAuthenticatedLinks = [
+                <li key='signIn'><Link to ="/signin">SignIn</Link></li>
+            ];
+            links.push(notAuthenticatedLinks);
         }
 
         return links;

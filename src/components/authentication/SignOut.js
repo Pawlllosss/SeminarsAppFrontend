@@ -1,6 +1,6 @@
 import React from "react";
 import {connect} from 'react-redux';
-import signOutAction from "../_actions/authentication/SignOutAction";
+import signOutAction from "../../_actions/authentication/SignOutAction";
 
 class SignOut extends React.Component {
 

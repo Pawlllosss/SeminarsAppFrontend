@@ -7,15 +7,17 @@ import reduxThunk from 'redux-thunk';
 import {AUTHENTICATED} from "./_actions/authentication/SignInAction";
 import rootReducer from "./_reducers/RootReducer";
 import App from './App';
-import AvailableCourses from "./course/AvailableCourses";
+import AvailableCourses from "./components/course/AvailableCourses";
 import * as serviceWorker from './serviceWorker';
 
 import Navbar from "./Navbar";
 import './index.css';
-import SignOut from "./authentication/SignOut";
+import SignOut from "./components/authentication/SignOut";
+import SignInForm from "./components/authentication/SignInForm";
+import forAuthenticated from "./components/protection/ForAuthenticated";
+import forNotAuthenticated from "./components/protection/ForNotAuthenticated";
 
 const createStoreWithMiddleware = applyMiddleware(reduxThunk)(createStore);
-//TODO: import reducers
 const store = createStoreWithMiddleware(rootReducer);
 
 const user = localStorage.getItem('token');
@@ -27,12 +29,11 @@ if(user) {
 const routing = (
     <Provider store={store}>
         <Router>
-            <div>
                 <Navbar/>
                 <Route exact path='/' component={App} />
+                <Route path='/signin' component={forNotAuthenticated(SignInForm)} />
                 <Route path='/courses' component={AvailableCourses} />
-                <Route path='/signout' component={SignOut} />
-            </div>
+                <Route path='/signout' component={forAuthenticated(SignOut)} />
         </Router>
     </Provider>
 );

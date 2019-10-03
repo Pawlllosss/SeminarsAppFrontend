@@ -2,7 +2,7 @@ import React from "react";
 import {connect} from 'react-redux';
 import {Formik} from "formik";
 import * as Yup from "yup";
-import {signInAction} from '../_actions/authentication/SignInAction';
+import {signInAction} from '../../_actions/authentication/SignInAction';
 
 import { Field, reduxForm } from 'redux-form';
 
