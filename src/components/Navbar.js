@@ -19,7 +19,8 @@ class Navbar extends React.Component {
         } else {
             //for not authenticated
             const notAuthenticatedLinks = [
-                <li key='signIn'><Link to ="/signin">SignIn</Link></li>
+                <li key='signIn'><Link to ="/signin">SignIn</Link></li>,
+                <li key='signUp'><Link to ="/signup">SignUp</Link></li>
             ];
             links.push(notAuthenticatedLinks);
         }

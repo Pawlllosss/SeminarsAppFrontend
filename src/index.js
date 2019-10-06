@@ -10,10 +10,11 @@ import App from './App';
 import AvailableCourses from "./components/course/AvailableCourses";
 import * as serviceWorker from './serviceWorker';
 
-import Navbar from "./Navbar";
+import Navbar from "./components/Navbar";
 import './index.css';
 import SignOut from "./components/authentication/SignOut";
 import SignInForm from "./components/authentication/SignInForm";
+import SignUpForm from "./components/authentication/SignUpForm";
 import forAuthenticated from "./components/protection/ForAuthenticated";
 import forNotAuthenticated from "./components/protection/ForNotAuthenticated";
 
@@ -29,11 +30,12 @@ if(user) {
 const routing = (
     <Provider store={store}>
         <Router>
-                <Navbar/>
-                <Route exact path='/' component={App} />
-                <Route path='/signin' component={forNotAuthenticated(SignInForm)} />
-                <Route path='/courses' component={AvailableCourses} />
-                <Route path='/signout' component={forAuthenticated(SignOut)} />
+            <Navbar/>
+            <Route exact path='/' component={App} />
+            <Route path='/signin' component={forNotAuthenticated(SignInForm)} />
+            <Route path='/signup' component={forNotAuthenticated(SignUpForm)} />
+            <Route path='/courses' component={AvailableCourses} />
+            <Route path='/signout' component={forAuthenticated(SignOut)} />
         </Router>
     </Provider>
 );

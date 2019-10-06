@@ -15,6 +15,7 @@ function signInAction({email, password}, history) {
 
         dispatch({type: AUTHENTICATED});
         localStorage.setItem('token', response.data.token);
+        history.push('/');
       } catch(error) {
           dispatch({
               type: AUTHENTICATION_ERROR,
