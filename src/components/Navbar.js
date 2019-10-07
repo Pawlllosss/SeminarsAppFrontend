@@ -1,40 +1,76 @@
 import React from 'react';
 import {connect} from 'react-redux';
 import {Link} from "react-router-dom";
+import {AppBar, List, ListItem, ListItemText, Toolbar, Typography} from '@material-ui/core';
+import { Home, Book, ExitToApp, PermIdentity, PersonAdd} from '@material-ui/icons'
 
 class Navbar extends React.Component {
 
     navbarLinks() {
         let links = [
-            <li key='home'><Link to ="/">Home</Link></li>,
-            <li key='courses'><Link to ="/courses">Courses</Link></li>,
+            this.createListItem('Home', '/', Home),
+            this.createListItem('Courses', '/courses', Book)
         ];
 
         //TODO: tmp - should distinguish between admin and user
         if(this.props.authenticated) {
             const authenticatedUserLinks = [
-                <li key='signOut'><Link to ='signout'>Sign out</Link></li>
+                this.createListItem('Sign Out', '/signout', ExitToApp)
             ];
             links.push(authenticatedUserLinks);
         } else {
-            //for not authenticated
             const notAuthenticatedLinks = [
-                <li key='signIn'><Link to ="/signin">SignIn</Link></li>,
-                <li key='signUp'><Link to ="/signup">SignUp</Link></li>
+                this.createListItem('Sign In', '/signin', PermIdentity),
+                this.createListItem('Sign Up', '/signup', PersonAdd)
             ];
             links.push(notAuthenticatedLinks);
         }
 
         return links;
+
+
+        return links;
+    }
+
+    createListItem(name, path, Icon) {
+        return (
+            <ListItemText inset>
+                <Typography color="inherit" variant="title">
+                    <Link to = {path}>
+                        {name}  <Icon />
+                    </Link>
+                </Typography>
+            </ListItemText>
+        );
+    }
+
+    currentUserInformation() {
+        if(!this.props.authenticated) {
+            return;
+        }
+        const currentUserStringed = localStorage.getItem('currentUser');
+        const currentUser = JSON.parse(currentUserStringed);
+        const nickname = currentUser.nickname;
+
+        return <p>{nickname}</p>;
     }
 
     render() {
         return (
-            <nav className='navbar'>
-                <ul>
-                    {this.navbarLinks()}
-                </ul>
-            </nav>
+            <div className='navbar'>
+                <AppBar color='primary' position='static'>
+                    <Toolbar>
+                        <Typography variant="title" color="inherit">Seminars</Typography>
+
+                        <List component='nav'>
+                            <ListItem component='div'>
+                                {this.navbarLinks()}
+                            </ListItem>
+                        </List>
+                        {this.currentUserInformation()}
+                    </Toolbar>
+                </AppBar>
+            </div>
         )
     }
 }
