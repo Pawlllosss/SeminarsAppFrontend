@@ -1,5 +1,6 @@
 import React, {Fragment} from 'react';
-import {Route, Link, BrowserRouter as Router} from 'react-router-dom'
+import queryString from 'query-string';
+import {Route, Link, BrowserRouter as Router, Redirect} from 'react-router-dom'
 import axios from 'axios';
 import {
 withStyles,
@@ -29,7 +30,8 @@ class AvailableCourses extends React.Component {
 
         this.API_BASE_PATH = API_URL;
         this.COURSE_PATH = 'course/';
-        this.COURSE_EDITOR_PATH = '/courses-editor/';
+        this.COURSE_EDITOR_CREATE_PATH = '/courses-editor/create';
+        this.COURSE_EDITOR_EDIT_PATH = '/courses-editor/edit';
     }
 
     componentDidMount() {
@@ -53,6 +55,12 @@ class AvailableCourses extends React.Component {
     }
 
     editCourse = async (course) => {
+        const name = course.name;
+        await axios.put(course._links.update.href, name, { headers: getAuthorizationBearerHeader()});
+
+        this.fetchCourses();
+        this.props.history.goBack();
+
     };
 
     saveCourse = async (course) => {
@@ -63,63 +71,66 @@ class AvailableCourses extends React.Component {
     };
 
     renderNewCourseEditor = () => {
-        //nie po id tylko po linku raczej
-        //_links.self.href
         return <CourseEditor onSave={this.saveCourse}/>
     };
 
-    renderExistingCourseEditor = ({ match: { params: { selfLink } } }) => {
-        //nie po id tylko po linku raczej
-        //_links.self.href
-        return <CourseEditor onSave={this.saveCourse}/>
+    renderExistingCourseEditor = () => {
+        const queryParameters = queryString.parse(this.props.location.search);
+        const updateLink = queryParameters.updateLink;
+        const course = find(this.state.courses, { _links: {update: {href: updateLink}}});
+
+        if(!course) {
+            return <Redirect to={'/courses'}/>
+        }
+        return <CourseEditor course={course} onSave={this.editCourse}/>
     };
 
-    render() {
+    getCourseNodes() {
         const courses = this.state.courses;
-        // const courseNodes = courses.map(course => <Course course={course} key={course._links}/>);
         const courseNodes = courses.map(course => (
-            <ListItem key={course._links.self} button component={Link} to={course._links.self}>
+            <ListItem key={course._links.self.href} button component={Link} to={course._links.self.href}>
                 <ListItemText
                     primary={course.name}
-                    // secondary={post.updatedAt && `Updated ${moment(post.updatedAt).fromNow()}`}
                 />
                 <ListItemSecondaryAction>
-                    <IconButton onClick={() => this.editCourse(course)} color="inherit">
-                        <EditIcon />
+                    <IconButton
+                        color="inherit"
+                        component={Link}
+                        to={'/courses' + this.COURSE_EDITOR_EDIT_PATH + '?updateLink=' + course._links.update.href}
+                    >
+                        <EditIcon/>
                     </IconButton>
                     <IconButton onClick={() => this.deleteCourse(course)} color="inherit">
-                        <DeleteIcon />
+                        <DeleteIcon/>
                     </IconButton>
                 </ListItemSecondaryAction>
             </ListItem>
         ));
+        return courseNodes;
+    }
+
+    render() {
+        const courseNodes = this.getCourseNodes();
 
         return (
           <div className="AvailableCourses">
               <Fragment>
                   <Typography variant="display1">Available Courses</Typography>
                   <Button
-                    aria-label='add'
-                    color='secondary'
-                    variant='fab'
-                  >
-                    <AddIcon/>
-                  </Button>
-                  <Paper elevation={1}>
-                    <List>{courseNodes}</List>
-                  </Paper>
-                  <Button
                       variant="fab"
                       color="secondary"
                       aria-label="add"
                       component={Link}
-                      to={'/courses' + this.COURSE_EDITOR_PATH}
+                      to={'/courses' + this.COURSE_EDITOR_CREATE_PATH}
                   >
                       <AddIcon/>
                   </Button>
+                  <Paper elevation={1}>
+                    <List>{courseNodes}</List>
+                  </Paper>
                   <Route path='/another' render={() => console.log('test2')} />
-                  <Route exact path={'/courses' + this.COURSE_EDITOR_PATH} render={this.renderNewCourseEditor}/>
-                  <Route exact path={'/courses' + this.COURSE_EDITOR_PATH + ':selfLink'} render={this.renderExistingCourseEditor}/>
+                  <Route exact path={'/courses' + this.COURSE_EDITOR_CREATE_PATH} render={this.renderNewCourseEditor}/>
+                  <Route path={'/courses' + this.COURSE_EDITOR_EDIT_PATH} render={this.renderExistingCourseEditor}/>
               </Fragment>
           </div>
         );
