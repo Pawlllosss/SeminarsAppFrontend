@@ -1,4 +1,6 @@
+import retrieveToken from "./TokenRetriever";
+
 export default function getAuthorizationBearerHeader() {
-    const token = localStorage.getItem('token');
+    const token = retrieveToken();
     return {'Authorization': 'Bearer ' + token}
 }
