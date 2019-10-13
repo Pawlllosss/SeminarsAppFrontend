@@ -64,7 +64,7 @@ class AvailableCourses extends React.Component {
     }
 
     canPerformCRUD() {
-        return this.props.authenticated && hasUserPrivilege(this.CRUD_ALL_COURSES_PRIVILEGE);
+        return this.props.authenticated && hasUserPrivilege(this.props.privileges, this.CRUD_ALL_COURSES_PRIVILEGE);
     }
 
     createUpdateButton(course) {
@@ -169,7 +169,9 @@ class AvailableCourses extends React.Component {
 
 function mapStateToProps(state) {
     return {
-        authenticated: state.authentication.authenticated
+        authenticated: state.authentication.authenticated,
+        nickname: state.authentication.nickname,
+        privileges: state.authentication.privileges
     };
 }
 
