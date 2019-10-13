@@ -1,9 +1,9 @@
 import React, {Fragment} from 'react';
-import queryString from 'query-string';
-import {Route, Link, BrowserRouter as Router, Redirect} from 'react-router-dom'
+import {Route, Link, Redirect} from 'react-router-dom'
 import axios from 'axios';
+import {find} from 'lodash';
+import queryString from 'query-string';
 import {
-withStyles,
 Typography,
 Button,
 IconButton,
@@ -14,8 +14,6 @@ ListItemText,
 ListItemSecondaryAction,
 } from '@material-ui/core';
 import { Delete as DeleteIcon, Add as AddIcon, Edit as EditIcon } from '@material-ui/icons';
-import {find} from 'lodash';
-import Course from "./Course";
 import {API_URL} from "../../config";
 import CourseEditor from "./CourseEditor";
 import getAuthorizationBearerHeader from "../../utils/authentication/BearerTokenSetter";
@@ -38,52 +36,10 @@ class AvailableCourses extends React.Component {
         this.fetchCourses();
     }
 
-
     fetchCourses() {
         axios.get(this.API_BASE_PATH + this.COURSE_PATH)
             .then(response => this.setState({courses: response.data._embedded.courses}));
     }
-
-    async deleteCourse(course) {
-        console.log(course)
-
-        if(window.confirm('Are you sure you want to delete ' + course.name)) {
-            axios.delete(course._links.delete.href, { headers: getAuthorizationBearerHeader()})
-                .then(response => this.fetchCourses())
-            //TODO: make catch
-        }
-    }
-
-    editCourse = async (course) => {
-        const name = course.name;
-        await axios.put(course._links.update.href, name, { headers: getAuthorizationBearerHeader()});
-
-        this.fetchCourses();
-        this.props.history.goBack();
-
-    };
-
-    saveCourse = async (course) => {
-        await axios.post(this.API_BASE_PATH + this.COURSE_PATH, course, { headers: getAuthorizationBearerHeader()});
-
-        this.fetchCourses();
-        this.props.history.goBack();
-    };
-
-    renderNewCourseEditor = () => {
-        return <CourseEditor onSave={this.saveCourse}/>
-    };
-
-    renderExistingCourseEditor = () => {
-        const queryParameters = queryString.parse(this.props.location.search);
-        const updateLink = queryParameters.updateLink;
-        const course = find(this.state.courses, { _links: {update: {href: updateLink}}});
-
-        if(!course) {
-            return <Redirect to={'/courses'}/>
-        }
-        return <CourseEditor course={course} onSave={this.editCourse}/>
-    };
 
     getCourseNodes() {
         const courses = this.state.courses;
@@ -108,6 +64,43 @@ class AvailableCourses extends React.Component {
         ));
         return courseNodes;
     }
+
+    async deleteCourse(course) {
+        if(window.confirm('Are you sure you want to delete ' + course.name)) {
+            await axios.delete(course._links.delete.href, { headers: getAuthorizationBearerHeader()});
+            this.fetchCourses();
+        }
+    }
+
+    renderNewCourseEditor = () => {
+        return <CourseEditor onSave={this.saveCourse}/>
+    };
+
+    saveCourse = async (course) => {
+        await axios.post(this.API_BASE_PATH + this.COURSE_PATH, course, { headers: getAuthorizationBearerHeader()});
+
+        this.fetchCourses();
+        this.props.history.goBack();
+    };
+
+    renderExistingCourseEditor = () => {
+        const queryParameters = queryString.parse(this.props.location.search);
+        const updateLink = queryParameters.updateLink;
+        const course = find(this.state.courses, { _links: {update: {href: updateLink}}});
+
+        if(!course) {
+            return <Redirect to={'/courses'}/>
+        }
+        return <CourseEditor course={course} onSave={this.editCourse}/>
+    };
+
+    editCourse = async (course) => {
+        const name = course.name;
+        await axios.put(course._links.update.href, name, { headers: getAuthorizationBearerHeader()});
+
+        this.fetchCourses();
+        this.props.history.goBack();
+    };
 
     render() {
         const courseNodes = this.getCourseNodes();
