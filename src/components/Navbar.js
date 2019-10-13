@@ -12,7 +12,6 @@ class Navbar extends React.Component {
             this.createListItem('Courses', '/courses', Book)
         ];
 
-        //TODO: tmp - should distinguish between admin and user
         if(this.props.authenticated) {
             const authenticatedUserLinks = [
                 this.createListItem('Sign Out', '/signout', ExitToApp)
@@ -25,9 +24,6 @@ class Navbar extends React.Component {
             ];
             links.push(notAuthenticatedLinks);
         }
-
-        return links;
-
 
         return links;
     }
