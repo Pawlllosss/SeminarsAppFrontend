@@ -5,14 +5,14 @@ import {
     CardActions,
     Modal,
     Button,
-    TextField,
+    Typography
 } from '@material-ui/core';
 import {withRouter} from 'react-router-dom';
-import {Form, Field} from 'react-final-form';
+import {Form} from 'react-final-form';
 
-function CourseEditor({course, onSave, history}) {
+function CourseDeleteConfirmation({course, onDelete, history}) {
     return (
-        <Form initialValues={course} onSubmit={onSave}>
+        <Form onSubmit={onDelete}>
             {({handleSubmit}) => (
                 <Modal
                     onClose={() => history.goBack}
@@ -21,20 +21,21 @@ function CourseEditor({course, onSave, history}) {
                     <Card>
                         <form onSubmit={handleSubmit}>
                             <CardContent>
-                                <Field name='name'>
-                                    {({ input }) => <TextField label="Title" autoFocus {...input} />}
-                                </Field>
+                                <Typography color="textSecondary" gutterBottom>
+                                    Are you sure you want to delete: {course.name}?
+                                </Typography>
                             </CardContent>
                             <CardActions>
-                                <Button size="small" color="primary" type="submit">Save</Button>
+                                <Button size="small" color="primary" onClick={() => onDelete(course)}>Delete</Button>
                                 <Button size="small" onClick={() => history.goBack()}>Cancel</Button>
                             </CardActions>
                         </form>
                     </Card>
                 </Modal>
+
             )}
         </Form>
     )
 }
 
-export default withRouter(CourseEditor);
+export default withRouter(CourseDeleteConfirmation);

@@ -17,6 +17,7 @@ import { Delete as DeleteIcon, Add as AddIcon, Edit as EditIcon } from '@materia
 import {API_URL} from "../../config";
 import CourseEditor from "./CourseEditor";
 import getAuthorizationBearerHeader from "../../utils/authentication/BearerTokenSetter";
+import CourseDeleteConfirmation from "./CourseDeleteConfirmation";
 
 class AvailableCourses extends React.Component {
 
@@ -28,8 +29,10 @@ class AvailableCourses extends React.Component {
 
         this.API_BASE_PATH = API_URL;
         this.COURSE_PATH = 'course/';
+        this.CURRENT_COMPONENT_PATH = '/courses';
         this.COURSE_EDITOR_CREATE_PATH = '/courses-editor/create';
         this.COURSE_EDITOR_EDIT_PATH = '/courses-editor/edit';
+        this.COURSE_DELETE_CONFIRMATION_PATH = '/courses-delete';
     }
 
     componentDidMount() {
@@ -52,11 +55,15 @@ class AvailableCourses extends React.Component {
                     <IconButton
                         color="inherit"
                         component={Link}
-                        to={'/courses' + this.COURSE_EDITOR_EDIT_PATH + '?updateLink=' + course._links.update.href}
+                        to={this.CURRENT_COMPONENT_PATH + this.COURSE_EDITOR_EDIT_PATH + '?updateLink=' + course._links.update.href}
                     >
                         <EditIcon/>
                     </IconButton>
-                    <IconButton onClick={() => this.deleteCourse(course)} color="inherit">
+                    <IconButton
+                        color="inherit"
+                        component={Link}
+                        to={this.CURRENT_COMPONENT_PATH + this.COURSE_DELETE_CONFIRMATION_PATH + '?deleteLink=' + course._links.delete.href}
+                    >
                         <DeleteIcon/>
                     </IconButton>
                 </ListItemSecondaryAction>
@@ -65,20 +72,12 @@ class AvailableCourses extends React.Component {
         return courseNodes;
     }
 
-    async deleteCourse(course) {
-        if(window.confirm('Are you sure you want to delete ' + course.name)) {
-            await axios.delete(course._links.delete.href, { headers: getAuthorizationBearerHeader()});
-            this.fetchCourses();
-        }
-    }
-
     renderNewCourseEditor = () => {
         return <CourseEditor onSave={this.saveCourse}/>
     };
 
     saveCourse = async (course) => {
         await axios.post(this.API_BASE_PATH + this.COURSE_PATH, course, { headers: getAuthorizationBearerHeader()});
-
         this.fetchCourses();
         this.props.history.goBack();
     };
@@ -89,15 +88,31 @@ class AvailableCourses extends React.Component {
         const course = find(this.state.courses, { _links: {update: {href: updateLink}}});
 
         if(!course) {
-            return <Redirect to={'/courses'}/>
+            return <Redirect to={this.CURRENT_COMPONENT_PATH}/>
         }
         return <CourseEditor course={course} onSave={this.editCourse}/>
     };
 
     editCourse = async (course) => {
         const name = course.name;
-        await axios.put(course._links.update.href, name, { headers: getAuthorizationBearerHeader()});
+        await axios.put(course._links.update.href, {name: name}, { headers: getAuthorizationBearerHeader()});
+        this.fetchCourses();
+        this.props.history.goBack();
+    };
 
+    renderCourseDeleteConfirmation = ()  => {
+        const queryParameters = queryString.parse(this.props.location.search);
+        const deleteLink = queryParameters.deleteLink;
+        const course = find(this.state.courses, { _links: {delete: {href: deleteLink}}});
+
+        if(!course) {
+            return <Redirect to={this.CURRENT_COMPONENT_PATH}/>
+        }
+        return <CourseDeleteConfirmation course={course} onDelete={this.deleteCourse}/>
+    };
+
+    deleteCourse = async (course) => {
+        await axios.delete(course._links.delete.href, { headers: getAuthorizationBearerHeader()});
         this.fetchCourses();
         this.props.history.goBack();
     };
@@ -114,16 +129,16 @@ class AvailableCourses extends React.Component {
                       color="secondary"
                       aria-label="add"
                       component={Link}
-                      to={'/courses' + this.COURSE_EDITOR_CREATE_PATH}
+                      to={this.CURRENT_COMPONENT_PATH + this.COURSE_EDITOR_CREATE_PATH}
                   >
                       <AddIcon/>
                   </Button>
                   <Paper elevation={1}>
                     <List>{courseNodes}</List>
                   </Paper>
-                  <Route path='/another' render={() => console.log('test2')} />
-                  <Route exact path={'/courses' + this.COURSE_EDITOR_CREATE_PATH} render={this.renderNewCourseEditor}/>
-                  <Route path={'/courses' + this.COURSE_EDITOR_EDIT_PATH} render={this.renderExistingCourseEditor}/>
+                  <Route exact path={this.CURRENT_COMPONENT_PATH + this.COURSE_EDITOR_CREATE_PATH} render={this.renderNewCourseEditor}/>
+                  <Route path={this.CURRENT_COMPONENT_PATH + this.COURSE_EDITOR_EDIT_PATH} render={this.renderExistingCourseEditor}/>
+                  <Route path={this.CURRENT_COMPONENT_PATH + this.COURSE_DELETE_CONFIRMATION_PATH} render={this.renderCourseDeleteConfirmation}/>
               </Fragment>
           </div>
         );
