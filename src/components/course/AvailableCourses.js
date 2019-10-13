@@ -1,4 +1,5 @@
 import React, {Fragment} from 'react';
+import {connect} from 'react-redux';
 import {Route, Link, Redirect} from 'react-router-dom'
 import axios from 'axios';
 import {find} from 'lodash';
@@ -18,6 +19,7 @@ import {API_URL} from "../../config";
 import CourseEditor from "./CourseEditor";
 import getAuthorizationBearerHeader from "../../utils/authentication/BearerTokenSetter";
 import CourseDeleteConfirmation from "./CourseDeleteConfirmation";
+import hasUserPrivilege from "../../utils/authorization/UserPrivilegeChecker";
 
 class AvailableCourses extends React.Component {
 
@@ -33,6 +35,7 @@ class AvailableCourses extends React.Component {
         this.COURSE_EDITOR_CREATE_PATH = '/courses-editor/create';
         this.COURSE_EDITOR_EDIT_PATH = '/courses-editor/edit';
         this.COURSE_DELETE_CONFIRMATION_PATH = '/courses-delete';
+        this.CRUD_ALL_COURSES_PRIVILEGE = 'CRUD_ALL_COURSES';
     }
 
     componentDidMount() {
@@ -52,24 +55,48 @@ class AvailableCourses extends React.Component {
                     primary={course.name}
                 />
                 <ListItemSecondaryAction>
-                    <IconButton
-                        color="inherit"
-                        component={Link}
-                        to={this.CURRENT_COMPONENT_PATH + this.COURSE_EDITOR_EDIT_PATH + '?updateLink=' + course._links.update.href}
-                    >
-                        <EditIcon/>
-                    </IconButton>
-                    <IconButton
-                        color="inherit"
-                        component={Link}
-                        to={this.CURRENT_COMPONENT_PATH + this.COURSE_DELETE_CONFIRMATION_PATH + '?deleteLink=' + course._links.delete.href}
-                    >
-                        <DeleteIcon/>
-                    </IconButton>
+                    {this.canPerformCRUD() && this.createUpdateButton(course)}
+                    {this.canPerformCRUD() && this.createDeleteButton(course)}
                 </ListItemSecondaryAction>
             </ListItem>
         ));
         return courseNodes;
+    }
+
+    canPerformCRUD() {
+        return this.props.authenticated && hasUserPrivilege(this.CRUD_ALL_COURSES_PRIVILEGE);
+    }
+
+    createUpdateButton(course) {
+        return <IconButton
+            color="inherit"
+            component={Link}
+            to={this.CURRENT_COMPONENT_PATH + this.COURSE_EDITOR_EDIT_PATH + '?updateLink=' + course._links.update.href}
+        >
+            <EditIcon/>
+        </IconButton>;
+    }
+
+    createDeleteButton(course) {
+        return <IconButton
+            color="inherit"
+            component={Link}
+            to={this.CURRENT_COMPONENT_PATH + this.COURSE_DELETE_CONFIRMATION_PATH + '?deleteLink=' + course._links.delete.href}
+        >
+            <DeleteIcon/>
+        </IconButton>;
+    }
+
+    createAddButton() {
+        return <Button
+            variant="fab"
+            color="secondary"
+            aria-label="add"
+            component={Link}
+            to={this.CURRENT_COMPONENT_PATH + this.COURSE_EDITOR_CREATE_PATH}
+        >
+            <AddIcon/>
+        </Button>;
     }
 
     renderNewCourseEditor = () => {
@@ -124,25 +151,26 @@ class AvailableCourses extends React.Component {
           <div className="AvailableCourses">
               <Fragment>
                   <Typography variant="display1">Available Courses</Typography>
-                  <Button
-                      variant="fab"
-                      color="secondary"
-                      aria-label="add"
-                      component={Link}
-                      to={this.CURRENT_COMPONENT_PATH + this.COURSE_EDITOR_CREATE_PATH}
-                  >
-                      <AddIcon/>
-                  </Button>
+                  {this.canPerformCRUD() && this.createAddButton()}
                   <Paper elevation={1}>
-                    <List>{courseNodes}</List>
+                      <List>{courseNodes}</List>
                   </Paper>
-                  <Route exact path={this.CURRENT_COMPONENT_PATH + this.COURSE_EDITOR_CREATE_PATH} render={this.renderNewCourseEditor}/>
-                  <Route path={this.CURRENT_COMPONENT_PATH + this.COURSE_EDITOR_EDIT_PATH} render={this.renderExistingCourseEditor}/>
-                  <Route path={this.CURRENT_COMPONENT_PATH + this.COURSE_DELETE_CONFIRMATION_PATH} render={this.renderCourseDeleteConfirmation}/>
+                  <Route exact path={this.CURRENT_COMPONENT_PATH + this.COURSE_EDITOR_CREATE_PATH}
+                         render={this.renderNewCourseEditor}/>
+                  <Route path={this.CURRENT_COMPONENT_PATH + this.COURSE_EDITOR_EDIT_PATH}
+                         render={this.renderExistingCourseEditor}/>
+                  <Route path={this.CURRENT_COMPONENT_PATH + this.COURSE_DELETE_CONFIRMATION_PATH}
+                         render={this.renderCourseDeleteConfirmation}/>
               </Fragment>
           </div>
         );
     }
 }
 
-export default AvailableCourses;
+function mapStateToProps(state) {
+    return {
+        authenticated: state.authentication.authenticated
+    };
+}
+
+export default connect(mapStateToProps)(AvailableCourses);
