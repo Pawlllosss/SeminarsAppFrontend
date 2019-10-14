@@ -6,13 +6,17 @@ export default function (ComposedComponent) {
     class ComponentForNotAuthenticated extends React.Component {
 
         componentWillMount() {
-            if(this.props.authenticated) {
+            if(this.isAuthenticated()) {
                 this.props.history.push('/');
             }
         }
 
+        isAuthenticated() {
+            return this.props.authenticated;
+        }
+
         componentWillUpdate(nextProps) {
-            if(nextProps.authenticated) {
+            if(this.isAuthenticated()) {
                 this.props.history.push('/');
             }
         }

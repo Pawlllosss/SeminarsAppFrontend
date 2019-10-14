@@ -15,8 +15,10 @@ import './index.css';
 import SignOut from "./components/authentication/SignOut";
 import SignInForm from "./components/authentication/SignInForm";
 import SignUpForm from "./components/authentication/SignUpForm";
+import Users from "./components/user/Users";
 import forAuthenticated from "./components/protection/ForAuthenticated";
 import forNotAuthenticated from "./components/protection/ForNotAuthenticated";
+import forPrivileged from "./components/protection/ForPrivileged";
 import retrieveToken from "./utils/authentication/TokenRetriever";
 import retrieveCurrentUser from "./utils/authentication/CurrentUserRetriever";
 
@@ -42,7 +44,7 @@ const routing = (
             <Route path='/signin' component={forNotAuthenticated(SignInForm)} />
             <Route path='/signup' component={forNotAuthenticated(SignUpForm)} />
             <Route path='/courses' component={AvailableCourses} />
-            //TODO: user path for privileged
+            <Route path='/users' component={forPrivileged(Users, 'CRUD_ALL_USERS')} />
             <Route path='/signout' component={forAuthenticated(SignOut)} />
         </Router>
     </Provider>
