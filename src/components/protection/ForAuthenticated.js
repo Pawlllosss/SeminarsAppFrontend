@@ -6,13 +6,17 @@ export default function (ComposedComponent) {
     class ComponentForAuthenticated extends React.Component {
 
         componentWillMount() {
-            if(!this.props.authenticated) {
+            if(!this.isAuthenticated()) {
                 this.props.history.push('/signin');
             }
         }
 
+        isAuthenticated() {
+            return this.props.authenticated;
+        }
+
         componentWillUpdate(nextProps) {
-            if(!nextProps.authenticated) {
+            if(!this.isAuthenticated()) {
                 this.props.history.push('/signin');
             }
         }

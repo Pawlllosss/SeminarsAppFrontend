@@ -18,7 +18,11 @@ function signInAction({email, password}, history) {
 
         const currentUser = await axios.get(API_BASE_PATH + CURRENT_USER_PATH, { headers: getAuthorizationBearerHeader()});
           localStorage.setItem('currentUser', JSON.stringify(currentUser.data));
-          dispatch({type: AUTHENTICATED});
+          dispatch({
+              type: AUTHENTICATED,
+              nickname: currentUser.data.nickname,
+              privileges: currentUser.data.privileges
+          });
           history.push('/');
       } catch(error) {
           dispatch({

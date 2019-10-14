@@ -5,14 +5,14 @@ import axios from 'axios';
 import {find} from 'lodash';
 import queryString from 'query-string';
 import {
-Typography,
-Button,
-IconButton,
-Paper,
-List,
-ListItem,
-ListItemText,
-ListItemSecondaryAction,
+    Typography,
+    Button,
+    IconButton,
+    Paper,
+    List,
+    ListItem,
+    ListItemText,
+    ListItemSecondaryAction
 } from '@material-ui/core';
 import { Delete as DeleteIcon, Add as AddIcon, Edit as EditIcon } from '@material-ui/icons';
 import {API_URL} from "../../config";
@@ -64,7 +64,7 @@ class AvailableCourses extends React.Component {
     }
 
     canPerformCRUD() {
-        return this.props.authenticated && hasUserPrivilege(this.CRUD_ALL_COURSES_PRIVILEGE);
+        return this.props.authenticated && hasUserPrivilege(this.props.privileges, this.CRUD_ALL_COURSES_PRIVILEGE);
     }
 
     createUpdateButton(course) {
@@ -169,7 +169,9 @@ class AvailableCourses extends React.Component {
 
 function mapStateToProps(state) {
     return {
-        authenticated: state.authentication.authenticated
+        authenticated: state.authentication.authenticated,
+        nickname: state.authentication.nickname,
+        privileges: state.authentication.privileges
     };
 }
 
