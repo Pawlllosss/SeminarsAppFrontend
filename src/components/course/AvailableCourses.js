@@ -59,15 +59,17 @@ class AvailableCourses extends React.Component {
     getCourseNodes() {
         const courses = this.state.courses;
         const courseNodes = courses.map(course => (
-            <ListItem key={course._links.self.href} button onClick={() => this.setCourseExpandedState(course._links.self.href)}>
-                {this.isCourseExpanded(course._links.self.href) ? <ExpandLess/> : <ExpandMore/>}
-                <ListItemText
-                    primary={course.name}
-                />
-                <ListItemSecondaryAction>
-                    {this.canPerformCRUD() && this.createUpdateButton(course)}
-                    {this.canPerformCRUD() && this.createDeleteButton(course)}
-                </ListItemSecondaryAction>
+            <div>
+                <ListItem key={course._links.self.href} button onClick={() => this.setCourseExpandedState(course._links.self.href)}>
+                    {this.isCourseExpanded(course._links.self.href) ? <ExpandLess/> : <ExpandMore/>}
+                    <ListItemText
+                        primary={course.name}
+                    />
+                    <ListItemSecondaryAction>
+                        {this.canPerformCRUD() && this.createUpdateButton(course)}
+                        {this.canPerformCRUD() && this.createDeleteButton(course)}
+                    </ListItemSecondaryAction>
+                </ListItem>
                 <Collapse in={this.isCourseExpanded(course._links.self.href)} timeout="auto" unmountOnExit>
                     <List component="div" disablePadding>
                         <ListItem button>
@@ -75,7 +77,7 @@ class AvailableCourses extends React.Component {
                         </ListItem>
                     </List>
                 </Collapse>
-            </ListItem>
+            </div>
         ));
         return courseNodes;
     }
