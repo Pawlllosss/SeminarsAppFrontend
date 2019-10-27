@@ -34,6 +34,7 @@ import {
     COURSE_EDITOR_CREATE_PATH, COURSE_EDITOR_EDIT_PATH,
     CRUD_ALL_COURSES_PRIVILEGE
 } from "./CourseConstants";
+import TopicsInCourseList from "../topic/TopicsInCourseList";
 
 class AvailableCourses extends React.Component {
 
@@ -59,8 +60,9 @@ class AvailableCourses extends React.Component {
     getCourseNodes() {
         const courses = this.state.courses;
         const courseNodes = courses.map(course => (
-            <div>
-                <ListItem key={course._links.self.href} button onClick={() => this.setCourseExpandedState(course._links.self.href)}>
+            <div key={course._links.self.href}>
+                <ListItem button
+                          onClick={() => this.setCourseExpandedState(course._links.self.href)}>
                     {this.isCourseExpanded(course._links.self.href) ? <ExpandLess/> : <ExpandMore/>}
                     <ListItemText
                         primary={course.name}
@@ -70,17 +72,17 @@ class AvailableCourses extends React.Component {
                         {this.canPerformCRUD() && this.createDeleteButton(course)}
                     </ListItemSecondaryAction>
                 </ListItem>
-                <Collapse in={this.isCourseExpanded(course._links.self.href)} timeout="auto" unmountOnExit>
-                    <List component="div" disablePadding>
-                        <ListItem button>
-                            <ListItemText primary="Starred" />
-                        </ListItem>
-                    </List>
-                </Collapse>
+                {this.renderCollapseComponent(course)}
             </div>
         ));
         return courseNodes;
     }
+
+    renderCollapseComponent(course) {
+        return <Collapse in={this.isCourseExpanded(course._links.self.href)} timeout="auto" unmountOnExit>
+                <TopicsInCourseList topicsURL={course._links.topics.href} />
+        </Collapse>;
+    };
 
     setCourseExpandedState(courseSelfLink) {
         const expandedCourses = this.state.expandedCourses;
