@@ -39,7 +39,7 @@ class Navbar extends React.Component {
 
     createListItem(name, path, Icon) {
         return (
-            <ListItemText inset>
+            <ListItemText key={name} inset>
                 <Typography color='inherit' variant='title' component={Link} to={path}>
                     {name}  <Icon />
                 </Typography>

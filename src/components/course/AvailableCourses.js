@@ -7,35 +7,45 @@ import queryString from 'query-string';
 import {
     Typography,
     Button,
-    IconButton,
     Paper,
+    IconButton,
     List,
     ListItem,
     ListItemText,
-    ListItemSecondaryAction
+    ListItemSecondaryAction,
+    Collapse
 } from '@material-ui/core';
-import { Delete as DeleteIcon, Add as AddIcon, Edit as EditIcon } from '@material-ui/icons';
+import {
+    Add as AddIcon,
+    Delete as DeleteIcon,
+    Edit as EditIcon,
+    ExpandMore,
+    ExpandLess
+} from '@material-ui/icons';
 import {API_URL} from "../../config";
 import CourseEditor from "./CourseEditor";
 import getAuthorizationBearerHeader from "../../utils/authentication/BearerTokenSetter";
 import CourseDeleteConfirmation from "./CourseDeleteConfirmation";
 import hasUserPrivilege from "../../utils/authorization/UserPrivilegeChecker";
+import {
+    COURSE_API_PATH,
+    COURSE_COMPONENT_PATH,
+    COURSE_DELETE_CONFIRMATION_PATH,
+    COURSE_EDITOR_CREATE_PATH, COURSE_EDITOR_EDIT_PATH,
+    CRUD_ALL_COURSES_PRIVILEGE
+} from "./CourseConstants";
+import TopicsInCourseList from "../topic/TopicsInCourseList";
 
 class AvailableCourses extends React.Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            courses: []
+            courses: [],
+            expandedCourses: []
         };
 
         this.API_BASE_PATH = API_URL;
-        this.COURSE_PATH = 'course/';
-        this.CURRENT_COMPONENT_PATH = '/courses';
-        this.COURSE_EDITOR_CREATE_PATH = '/courses-editor/create';
-        this.COURSE_EDITOR_EDIT_PATH = '/courses-editor/edit';
-        this.COURSE_DELETE_CONFIRMATION_PATH = '/courses-delete';
-        this.CRUD_ALL_COURSES_PRIVILEGE = 'CRUD_ALL_COURSES';
     }
 
     componentDidMount() {
@@ -43,35 +53,59 @@ class AvailableCourses extends React.Component {
     }
 
     fetchCourses() {
-        axios.get(this.API_BASE_PATH + this.COURSE_PATH)
+        axios.get(this.API_BASE_PATH + COURSE_API_PATH)
             .then(response => this.setState({courses: response.data._embedded.courses}));
     }
 
     getCourseNodes() {
         const courses = this.state.courses;
         const courseNodes = courses.map(course => (
-            <ListItem key={course._links.self.href} button component={Link} to={course._links.self.href}>
-                <ListItemText
-                    primary={course.name}
-                />
-                <ListItemSecondaryAction>
-                    {this.canPerformCRUD() && this.createUpdateButton(course)}
-                    {this.canPerformCRUD() && this.createDeleteButton(course)}
-                </ListItemSecondaryAction>
-            </ListItem>
+            <div key={course._links.self.href}>
+                <ListItem button
+                          onClick={() => this.setCourseExpandedState(course._links.self.href)}>
+                    {this.isCourseExpanded(course._links.self.href) ? <ExpandLess/> : <ExpandMore/>}
+                    <ListItemText
+                        primary={course.name}
+                    />
+                    <ListItemSecondaryAction>
+                        {this.canPerformCRUD() && this.createUpdateButton(course)}
+                        {this.canPerformCRUD() && this.createDeleteButton(course)}
+                    </ListItemSecondaryAction>
+                </ListItem>
+                {this.renderCollapseComponent(course)}
+            </div>
         ));
         return courseNodes;
     }
 
+    renderCollapseComponent(course) {
+        return <Collapse in={this.isCourseExpanded(course._links.self.href)} timeout="auto" unmountOnExit>
+                <TopicsInCourseList topicsURL={course._links.topics.href} />
+        </Collapse>;
+    };
+
+    setCourseExpandedState(courseSelfLink) {
+        const expandedCourses = this.state.expandedCourses;
+        const indexOfExpandedCourse = expandedCourses.indexOf(courseSelfLink);
+
+        if (indexOfExpandedCourse === - 1) {
+            expandedCourses.push(courseSelfLink);
+        } else {
+            expandedCourses.splice(indexOfExpandedCourse, 1);
+        }
+
+        this.setState({expandedCourses: expandedCourses});
+    }
+
     canPerformCRUD() {
-        return this.props.authenticated && hasUserPrivilege(this.props.privileges, this.CRUD_ALL_COURSES_PRIVILEGE);
+        return this.props.authenticated && hasUserPrivilege(this.props.privileges, CRUD_ALL_COURSES_PRIVILEGE);
     }
 
     createUpdateButton(course) {
         return <IconButton
             color="inherit"
             component={Link}
-            to={this.CURRENT_COMPONENT_PATH + this.COURSE_EDITOR_EDIT_PATH + '?updateLink=' + course._links.update.href}
+            to={COURSE_COMPONENT_PATH + COURSE_EDITOR_EDIT_PATH + '?updateLink=' + course._links.update.href}
         >
             <EditIcon/>
         </IconButton>;
@@ -81,10 +115,14 @@ class AvailableCourses extends React.Component {
         return <IconButton
             color="inherit"
             component={Link}
-            to={this.CURRENT_COMPONENT_PATH + this.COURSE_DELETE_CONFIRMATION_PATH + '?deleteLink=' + course._links.delete.href}
+            to={COURSE_COMPONENT_PATH + COURSE_DELETE_CONFIRMATION_PATH + '?deleteLink=' + course._links.delete.href}
         >
             <DeleteIcon/>
         </IconButton>;
+    }
+
+    isCourseExpanded(courseSelfLink) {
+        return this.state.expandedCourses.indexOf(courseSelfLink) !== -1;
     }
 
     createAddButton() {
@@ -93,7 +131,7 @@ class AvailableCourses extends React.Component {
             color="secondary"
             aria-label="add"
             component={Link}
-            to={this.CURRENT_COMPONENT_PATH + this.COURSE_EDITOR_CREATE_PATH}
+            to={COURSE_COMPONENT_PATH + COURSE_EDITOR_CREATE_PATH}
         >
             <AddIcon/>
         </Button>;
@@ -104,7 +142,7 @@ class AvailableCourses extends React.Component {
     };
 
     saveCourse = async (course) => {
-        await axios.post(this.API_BASE_PATH + this.COURSE_PATH, course, { headers: getAuthorizationBearerHeader()});
+        await axios.post(this.API_BASE_PATH + COURSE_API_PATH, course, { headers: getAuthorizationBearerHeader()});
         this.fetchCourses();
         this.props.history.goBack();
     };
@@ -115,7 +153,7 @@ class AvailableCourses extends React.Component {
         const course = find(this.state.courses, { _links: {update: {href: updateLink}}});
 
         if(!course) {
-            return <Redirect to={this.CURRENT_COMPONENT_PATH}/>
+            return <Redirect to={COURSE_COMPONENT_PATH}/>
         }
         return <CourseEditor course={course} onSave={this.editCourse}/>
     };
@@ -133,7 +171,7 @@ class AvailableCourses extends React.Component {
         const course = find(this.state.courses, { _links: {delete: {href: deleteLink}}});
 
         if(!course) {
-            return <Redirect to={this.CURRENT_COMPONENT_PATH}/>
+            return <Redirect to={COURSE_COMPONENT_PATH}/>
         }
         return <CourseDeleteConfirmation course={course} onDelete={this.deleteCourse}/>
     };
@@ -141,7 +179,7 @@ class AvailableCourses extends React.Component {
     deleteCourse = async (course) => {
         await axios.delete(course._links.delete.href, { headers: getAuthorizationBearerHeader()});
         this.fetchCourses();
-        this.props.history.goBack();
+        this.props.history.push(COURSE_COMPONENT_PATH);
     };
 
     render() {
@@ -155,11 +193,11 @@ class AvailableCourses extends React.Component {
                   <Paper elevation={1}>
                       <List>{courseNodes}</List>
                   </Paper>
-                  <Route exact path={this.CURRENT_COMPONENT_PATH + this.COURSE_EDITOR_CREATE_PATH}
+                  <Route exact path={COURSE_COMPONENT_PATH + COURSE_EDITOR_CREATE_PATH}
                          render={this.renderNewCourseEditor}/>
-                  <Route path={this.CURRENT_COMPONENT_PATH + this.COURSE_EDITOR_EDIT_PATH}
+                  <Route path={COURSE_COMPONENT_PATH + COURSE_EDITOR_EDIT_PATH}
                          render={this.renderExistingCourseEditor}/>
-                  <Route path={this.CURRENT_COMPONENT_PATH + this.COURSE_DELETE_CONFIRMATION_PATH}
+                  <Route path={COURSE_COMPONENT_PATH + COURSE_DELETE_CONFIRMATION_PATH}
                          render={this.renderCourseDeleteConfirmation}/>
               </Fragment>
           </div>
