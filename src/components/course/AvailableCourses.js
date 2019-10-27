@@ -13,12 +13,14 @@ import {
     ListItem,
     ListItemText,
     ListItemSecondaryAction,
+    Collapse
 } from '@material-ui/core';
 import {
     Add as AddIcon,
     Delete as DeleteIcon,
     Edit as EditIcon,
-    ExpandMore
+    ExpandMore,
+    ExpandLess
 } from '@material-ui/icons';
 import {API_URL} from "../../config";
 import CourseEditor from "./CourseEditor";
@@ -38,7 +40,8 @@ class AvailableCourses extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            courses: []
+            courses: [],
+            expandedCourses: []
         };
 
         this.API_BASE_PATH = API_URL;
@@ -56,7 +59,8 @@ class AvailableCourses extends React.Component {
     getCourseNodes() {
         const courses = this.state.courses;
         const courseNodes = courses.map(course => (
-            <ListItem key={course._links.self.href} button component={Link} to={course._links.self.href}>
+            <ListItem key={course._links.self.href} button onClick={() => this.setCourseExpandedState(course._links.self.href)}>
+                {this.isCourseExpanded(course._links.self.href) ? <ExpandLess/> : <ExpandMore/>}
                 <ListItemText
                     primary={course.name}
                 />
@@ -64,9 +68,29 @@ class AvailableCourses extends React.Component {
                     {this.canPerformCRUD() && this.createUpdateButton(course)}
                     {this.canPerformCRUD() && this.createDeleteButton(course)}
                 </ListItemSecondaryAction>
+                <Collapse in={this.isCourseExpanded(course._links.self.href)} timeout="auto" unmountOnExit>
+                    <List component="div" disablePadding>
+                        <ListItem button>
+                            <ListItemText primary="Starred" />
+                        </ListItem>
+                    </List>
+                </Collapse>
             </ListItem>
         ));
         return courseNodes;
+    }
+
+    setCourseExpandedState(courseSelfLink) {
+        const expandedCourses = this.state.expandedCourses;
+        const indexOfExpandedCourse = expandedCourses.indexOf(courseSelfLink);
+
+        if (indexOfExpandedCourse === - 1) {
+            expandedCourses.push(courseSelfLink);
+        } else {
+            expandedCourses.splice(indexOfExpandedCourse, 1);
+        }
+
+        this.setState({expandedCourses: expandedCourses});
     }
 
     canPerformCRUD() {
@@ -91,6 +115,10 @@ class AvailableCourses extends React.Component {
         >
             <DeleteIcon/>
         </IconButton>;
+    }
+
+    isCourseExpanded(courseSelfLink) {
+        return this.state.expandedCourses.indexOf(courseSelfLink) !== -1;
     }
 
     createAddButton() {
