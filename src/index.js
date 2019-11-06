@@ -7,7 +7,7 @@ import reduxThunk from 'redux-thunk';
 import {AUTHENTICATED} from "./_actions/authentication/SignInAction";
 import rootReducer from "./_reducers/RootReducer";
 import App from './App';
-import AvailableCourses from "./components/course/AvailableCourses";
+import CoursesView from "./components/course/CoursesView";
 import Navbar from "./components/Navbar";
 import * as serviceWorker from './serviceWorker';
 import './index.css';
@@ -43,7 +43,7 @@ const routing = (
             <Route exact path='/' component={App} />
             <Route path='/signin' component={forNotAuthenticated(SignInForm)} />
             <Route path='/signup' component={forNotAuthenticated(SignUpForm)} />
-            <Route path='/courses' component={AvailableCourses} />
+            <Route path='/courses' component={CoursesView} />
             <Route path='/users' component={forPrivileged(Users, 'CRUD_ALL_USERS')} />
             <Route path='/signout' component={forAuthenticated(SignOut)} />
         </Router>

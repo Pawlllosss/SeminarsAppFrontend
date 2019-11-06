@@ -36,7 +36,7 @@ import {
 } from "./CourseConstants";
 import TopicsInCourseList from "../topic/TopicsInCourseList";
 
-class AvailableCourses extends React.Component {
+class CoursesView extends React.Component {
 
     constructor(props) {
         super(props);
@@ -68,8 +68,8 @@ class AvailableCourses extends React.Component {
                         primary={course.name}
                     />
                     <ListItemSecondaryAction>
-                        {this.canPerformCRUD() && this.createUpdateButton(course)}
-                        {this.canPerformCRUD() && this.createDeleteButton(course)}
+                        {this.canPerformCourseCRUD() && this.createUpdateButton(course)}
+                        {this.canPerformCourseCRUD() && this.createDeleteButton(course)}
                     </ListItemSecondaryAction>
                 </ListItem>
                 {this.renderCollapseComponent(course)}
@@ -77,12 +77,6 @@ class AvailableCourses extends React.Component {
         ));
         return courseNodes;
     }
-
-    renderCollapseComponent(course) {
-        return <Collapse in={this.isCourseExpanded(course._links.self.href)} timeout="auto" unmountOnExit>
-                <TopicsInCourseList topicsURL={course._links.topics.href} />
-        </Collapse>;
-    };
 
     setCourseExpandedState(courseSelfLink) {
         const expandedCourses = this.state.expandedCourses;
@@ -97,7 +91,7 @@ class AvailableCourses extends React.Component {
         this.setState({expandedCourses: expandedCourses});
     }
 
-    canPerformCRUD() {
+    canPerformCourseCRUD() {
         return this.props.authenticated && hasUserPrivilege(this.props.privileges, CRUD_ALL_COURSES_PRIVILEGE);
     }
 
@@ -120,6 +114,12 @@ class AvailableCourses extends React.Component {
             <DeleteIcon/>
         </IconButton>;
     }
+
+    renderCollapseComponent(course) {
+        return <Collapse in={this.isCourseExpanded(course._links.self.href)} timeout="auto" unmountOnExit>
+            <TopicsInCourseList topicsURL={course._links.topics.href} />
+        </Collapse>;
+    };
 
     isCourseExpanded(courseSelfLink) {
         return this.state.expandedCourses.indexOf(courseSelfLink) !== -1;
@@ -189,7 +189,7 @@ class AvailableCourses extends React.Component {
           <div className="AvailableCourses">
               <Fragment>
                   <Typography variant="display1">Available Courses</Typography>
-                  {this.canPerformCRUD() && this.createAddButton()}
+                  {this.canPerformCourseCRUD() && this.createAddButton()}
                   <Paper elevation={1}>
                       <List>{courseNodes}</List>
                   </Paper>
@@ -213,4 +213,4 @@ function mapStateToProps(state) {
     };
 }
 
-export default connect(mapStateToProps)(AvailableCourses);
+export default connect(mapStateToProps)(CoursesView);

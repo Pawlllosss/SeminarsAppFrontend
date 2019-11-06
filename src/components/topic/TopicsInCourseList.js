@@ -1,6 +1,10 @@
 import React from 'react';
 import axios from "axios";
-import {List, ListItem, ListItemText} from "@material-ui/core";
+import {
+    List,
+    ListItem,
+    ListItemText
+} from "@material-ui/core";
 
 class TopicsInCourseList extends React.Component {
 
