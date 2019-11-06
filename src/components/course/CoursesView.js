@@ -34,7 +34,11 @@ import {
     COURSE_EDITOR_CREATE_PATH, COURSE_EDITOR_EDIT_PATH,
     CRUD_ALL_COURSES_PRIVILEGE
 } from "./CourseConstants";
+import {
+    CRUD_ALL_TOPICS_PRIVILEGE
+} from "../topic/TopicConstants"
 import TopicsInCourseList from "../topic/TopicsInCourseList";
+import TopicCreateDialog from "../topic/TopicCreateDialog";
 
 class CoursesView extends React.Component {
 
@@ -52,10 +56,10 @@ class CoursesView extends React.Component {
         this.fetchCourses();
     }
 
-    fetchCourses() {
+    fetchCourses = () => {
         axios.get(this.API_BASE_PATH + COURSE_API_PATH)
             .then(response => this.setState({courses: response.data._embedded.courses}));
-    }
+    };
 
     getCourseNodes() {
         const courses = this.state.courses;
@@ -68,6 +72,7 @@ class CoursesView extends React.Component {
                         primary={course.name}
                     />
                     <ListItemSecondaryAction>
+                        {this.canPerformTopicCRUD() && this.createAddTopicButton(course)}
                         {this.canPerformCourseCRUD() && this.createUpdateButton(course)}
                         {this.canPerformCourseCRUD() && this.createDeleteButton(course)}
                     </ListItemSecondaryAction>
@@ -91,8 +96,17 @@ class CoursesView extends React.Component {
         this.setState({expandedCourses: expandedCourses});
     }
 
+    canPerformTopicCRUD() {
+        return this.props.authenticated && hasUserPrivilege(this.props.privileges, CRUD_ALL_TOPICS_PRIVILEGE);
+    }
+
     canPerformCourseCRUD() {
         return this.props.authenticated && hasUserPrivilege(this.props.privileges, CRUD_ALL_COURSES_PRIVILEGE);
+    }
+
+    createAddTopicButton(course) {
+        const createTopicForCoursePath = course._links.createTopic.href;
+        return <TopicCreateDialog createTopicPath={createTopicForCoursePath} fetchCourses={this.fetchCourses}/>;
     }
 
     createUpdateButton(course) {
