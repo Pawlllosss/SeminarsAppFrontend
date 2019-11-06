@@ -3,8 +3,10 @@ import axios from "axios";
 import {
     List,
     ListItem,
-    ListItemText
+    ListItemText,
+    ListItemSecondaryAction
 } from "@material-ui/core";
+import TopicEditDialog from "./TopicEditDialog";
 
 class TopicsInCourseList extends React.Component {
 
@@ -16,15 +18,15 @@ class TopicsInCourseList extends React.Component {
     }
 
     componentDidMount() {
-        this.fetchTopics(this.props.topicsURL);
+        this.fetchTopics();
     }
 
-    fetchTopics(topicsURL) {
-        return axios.get(topicsURL)
+    fetchTopics = () => {
+        return axios.get(this.props.topicPath)
             .then(response => response.data)
             .then(data => data._embedded !== undefined ? data._embedded.topics : [])
             .then(topics => this.setState({topics: topics}));
-    }
+    };
 
     createTopicNodes() {
         if (this.state.topics.length) {
@@ -38,9 +40,13 @@ class TopicsInCourseList extends React.Component {
     }
 
     createTopicNodesForCourseWithTopics() {
+        //TODO: add secondary
         return this.state.topics.map(topic => (
             <ListItem key={topic._links.self.href} button>
                 <ListItemText primary={topic.name}/>
+                <ListItemSecondaryAction>
+                    <TopicEditDialog topic={topic} fetchTopics={this.fetchTopics} />
+                </ListItemSecondaryAction>
             </ListItem>
         ));
     }

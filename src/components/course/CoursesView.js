@@ -131,7 +131,7 @@ class CoursesView extends React.Component {
 
     renderCollapseComponent(course) {
         return <Collapse in={this.isCourseExpanded(course._links.self.href)} timeout="auto" unmountOnExit>
-            <TopicsInCourseList topicsURL={course._links.topics.href} />
+            <TopicsInCourseList topicPath={course._links.topics.href} />
         </Collapse>;
     };
 

@@ -12,32 +12,39 @@ import {
 
 } from '@material-ui/core';
 import {Link} from "react-router-dom";
-import {AddOutlined as AddIcon} from "@material-ui/icons";
+import {EditOutlined as EditIcon} from "@material-ui/icons";
 import getAuthorizationBearerHeader from "../../utils/authentication/BearerTokenSetter";
 
-const TopicCreateDialog = (props) => {
+const TopicEditDialog = (props) => {
+
+    const originalName = props.topic.name;
+    const originalDescription = props.topic.description;
 
     const [isOpen, setIsOpen] = React.useState(false);
-    const [name, setName] = React.useState("");
-    const [description, setDescription] = React.useState("");
+    const [name, setName] = React.useState(originalName);
+    const [description, setDescription] = React.useState(originalDescription);
 
     const handleClickOpen = () => {
+
         setIsOpen(true);
     };
 
     const handleChange = (event, stateChangeFunction) => {
+
         stateChangeFunction(event.target.value);
     };
 
     const handleClose = () => {
+
         setIsOpen(false);
     };
 
     const handleSubmit = (event) => {
         event.preventDefault();
-        props.fetchCourses();
-        axios.post(props.createTopicPath, {name, description}, { headers: getAuthorizationBearerHeader()});
         //TODO: add input validations
+        axios.put(props.topic._links.update.href, {name, description}, { headers: getAuthorizationBearerHeader()})
+            .finally(() => props.fetchTopics());
+
         setIsOpen(false);
     };
 
@@ -46,12 +53,12 @@ const TopicCreateDialog = (props) => {
     return (
         <div style={divStyle}>
             <IconButton
-            color="inherit"
-            component={Link}
-            onClick={handleClickOpen}
+                color="inherit"
+                component={Link}
+                onClick={handleClickOpen}
             >
-            <AddIcon />
-        </IconButton>
+                <EditIcon />
+            </IconButton>
             <Dialog open={isOpen} onClose={handleClose} aria-labelledby="form-dialog-title">
                 <DialogTitle id="form-dialog-title">Subscribe</DialogTitle>
                 <DialogContent>
@@ -66,6 +73,7 @@ const TopicCreateDialog = (props) => {
                         label="Name"
                         type="text"
                         required={true}
+                        defaultValue={originalName}
                         onChange={(event) => handleChange(event, setName)}
                         fullWidth
                     />
@@ -75,6 +83,7 @@ const TopicCreateDialog = (props) => {
                         label="Description"
                         type="text"
                         required={true}
+                        defaultValue={originalDescription}
                         onChange={(event) => handleChange(event, setDescription)}
                         fullWidth
                     />
@@ -92,4 +101,4 @@ const TopicCreateDialog = (props) => {
     )
 };
 
-export default TopicCreateDialog;
+export default TopicEditDialog;
