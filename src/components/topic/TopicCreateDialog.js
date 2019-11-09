@@ -35,8 +35,8 @@ const TopicCreateDialog = (props) => {
 
     const handleSubmit = (event) => {
         event.preventDefault();
-        props.fetchCourses();
-        axios.post(props.createTopicPath, {name, description}, { headers: getAuthorizationBearerHeader()});
+        axios.post(props.createTopicPath, {name, description}, { headers: getAuthorizationBearerHeader()})
+            .finally(() => props.fetchCourses());
         //TODO: add input validations
         setIsOpen(false);
     };
@@ -53,12 +53,8 @@ const TopicCreateDialog = (props) => {
             <AddIcon />
         </IconButton>
             <Dialog open={isOpen} onClose={handleClose} aria-labelledby="form-dialog-title">
-                <DialogTitle id="form-dialog-title">Subscribe</DialogTitle>
+                <DialogTitle id="form-dialog-title">Create topic</DialogTitle>
                 <DialogContent>
-                    <DialogContentText>
-                        To subscribe to this website, please enter your email address here. We will send updates
-                        occasionally.
-                    </DialogContentText>
                     <TextField
                         autoFocus
                         margin="dense"

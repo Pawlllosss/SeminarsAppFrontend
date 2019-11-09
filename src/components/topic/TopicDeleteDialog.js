@@ -12,37 +12,30 @@ import {
 
 } from '@material-ui/core';
 import {Link} from "react-router-dom";
-import {EditOutlined as EditIcon} from "@material-ui/icons";
+import {DeleteOutlined as DeleteIcon} from "@material-ui/icons";
 import getAuthorizationBearerHeader from "../../utils/authentication/BearerTokenSetter";
 
-const TopicEditDialog = (props) => {
+const TopicDeleteDialog = (props) => {
 
-    const originalName = props.topic.name;
-    const originalDescription = props.topic.description;
+    const topicName = props.topic.name;
 
     const [isOpen, setIsOpen] = React.useState(false);
-    const [name, setName] = React.useState(originalName);
-    const [description, setDescription] = React.useState(originalDescription);
 
     const handleClickOpen = () => {
-
         setIsOpen(true);
     };
 
     const handleChange = (event, stateChangeFunction) => {
-
         stateChangeFunction(event.target.value);
     };
 
     const handleClose = () => {
-
         setIsOpen(false);
     };
 
     const handleSubmit = (event) => {
         event.preventDefault();
-        //TODO: add input validations
-        axios.put(props.topic._links.update.href, {name, description}, { headers: getAuthorizationBearerHeader()})
+        axios.delete(props.topic._links.delete.href, { headers: getAuthorizationBearerHeader()})
             .finally(() => props.fetchTopics());
 
         setIsOpen(false);
@@ -57,42 +50,21 @@ const TopicEditDialog = (props) => {
                 component={Link}
                 onClick={handleClickOpen}
             >
-                <EditIcon />
+                <DeleteIcon />
             </IconButton>
             <Dialog open={isOpen} onClose={handleClose} aria-labelledby="form-dialog-title">
-                <DialogTitle id="form-dialog-title">Edit topic</DialogTitle>
+                <DialogTitle id="form-dialog-title">Delete topic</DialogTitle>
                 <DialogContent>
                     <DialogContentText>
-                        You are going to edit the following topic: {originalName}.
+                        Are you sure you want to delete the following topic: {topicName}?
                     </DialogContentText>
-                    <TextField
-                        autoFocus
-                        margin="dense"
-                        id="name"
-                        label="Name"
-                        type="text"
-                        required={true}
-                        defaultValue={originalName}
-                        onChange={(event) => handleChange(event, setName)}
-                        fullWidth
-                    />
-                    <TextField
-                        margin="dense"
-                        id="description"
-                        label="Description"
-                        type="text"
-                        required={true}
-                        defaultValue={originalDescription}
-                        onChange={(event) => handleChange(event, setDescription)}
-                        fullWidth
-                    />
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleClose} color="primary">
                         Cancel
                     </Button>
                     <Button onClick={handleSubmit} color="primary">
-                        Submit
+                        Delete
                     </Button>
                 </DialogActions>
             </Dialog>
@@ -100,4 +72,4 @@ const TopicEditDialog = (props) => {
     )
 };
 
-export default TopicEditDialog;
+export default TopicDeleteDialog;

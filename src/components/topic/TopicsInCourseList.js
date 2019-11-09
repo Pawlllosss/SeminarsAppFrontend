@@ -7,6 +7,7 @@ import {
     ListItemSecondaryAction
 } from "@material-ui/core";
 import TopicEditDialog from "./TopicEditDialog";
+import TopicDeleteDialog from "./TopicDeleteDialog";
 
 class TopicsInCourseList extends React.Component {
 
@@ -40,12 +41,12 @@ class TopicsInCourseList extends React.Component {
     }
 
     createTopicNodesForCourseWithTopics() {
-        //TODO: add secondary
         return this.state.topics.map(topic => (
             <ListItem key={topic._links.self.href} button>
-                <ListItemText primary={topic.name}/>
+                <ListItemText primary={topic.name} secondary={topic.description}/>
                 <ListItemSecondaryAction>
                     <TopicEditDialog topic={topic} fetchTopics={this.fetchTopics} />
+                    <TopicDeleteDialog topic={topic} fetchTopics={this.fetchTopics} />
                 </ListItemSecondaryAction>
             </ListItem>
         ));
