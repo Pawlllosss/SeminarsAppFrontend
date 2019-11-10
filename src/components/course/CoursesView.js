@@ -58,7 +58,9 @@ class CoursesView extends React.Component {
 
     fetchCourses = () => {
         axios.get(this.API_BASE_PATH + COURSE_API_PATH)
-            .then(response => this.setState({courses: response.data._embedded.courses}));
+            .then(response => response.data)
+            .then(data => data._embedded !== undefined ? data._embedded.courses : [])
+            .then(courses => this.setState({courses: courses}));
     };
 
     getCourseNodes() {
