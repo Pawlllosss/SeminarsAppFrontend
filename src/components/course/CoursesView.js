@@ -34,9 +34,13 @@ import {
     COURSE_EDITOR_CREATE_PATH, COURSE_EDITOR_EDIT_PATH,
     CRUD_ALL_COURSES_PRIVILEGE
 } from "./CourseConstants";
+import {
+    CRUD_ALL_TOPICS_PRIVILEGE
+} from "../topic/TopicConstants"
 import TopicsInCourseList from "../topic/TopicsInCourseList";
+import TopicCreateDialog from "../topic/TopicCreateDialog";
 
-class AvailableCourses extends React.Component {
+class CoursesView extends React.Component {
 
     constructor(props) {
         super(props);
@@ -52,10 +56,10 @@ class AvailableCourses extends React.Component {
         this.fetchCourses();
     }
 
-    fetchCourses() {
+    fetchCourses = () => {
         axios.get(this.API_BASE_PATH + COURSE_API_PATH)
             .then(response => this.setState({courses: response.data._embedded.courses}));
-    }
+    };
 
     getCourseNodes() {
         const courses = this.state.courses;
@@ -68,8 +72,9 @@ class AvailableCourses extends React.Component {
                         primary={course.name}
                     />
                     <ListItemSecondaryAction>
-                        {this.canPerformCRUD() && this.createUpdateButton(course)}
-                        {this.canPerformCRUD() && this.createDeleteButton(course)}
+                        {this.canPerformTopicCRUD() && this.createAddTopicButton(course)}
+                        {this.canPerformCourseCRUD() && this.createUpdateButton(course)}
+                        {this.canPerformCourseCRUD() && this.createDeleteButton(course)}
                     </ListItemSecondaryAction>
                 </ListItem>
                 {this.renderCollapseComponent(course)}
@@ -77,12 +82,6 @@ class AvailableCourses extends React.Component {
         ));
         return courseNodes;
     }
-
-    renderCollapseComponent(course) {
-        return <Collapse in={this.isCourseExpanded(course._links.self.href)} timeout="auto" unmountOnExit>
-                <TopicsInCourseList topicsURL={course._links.topics.href} />
-        </Collapse>;
-    };
 
     setCourseExpandedState(courseSelfLink) {
         const expandedCourses = this.state.expandedCourses;
@@ -97,8 +96,17 @@ class AvailableCourses extends React.Component {
         this.setState({expandedCourses: expandedCourses});
     }
 
-    canPerformCRUD() {
+    canPerformTopicCRUD() {
+        return this.props.authenticated && hasUserPrivilege(this.props.privileges, CRUD_ALL_TOPICS_PRIVILEGE);
+    }
+
+    canPerformCourseCRUD() {
         return this.props.authenticated && hasUserPrivilege(this.props.privileges, CRUD_ALL_COURSES_PRIVILEGE);
+    }
+
+    createAddTopicButton(course) {
+        const createTopicForCoursePath = course._links.createTopic.href;
+        return <TopicCreateDialog createTopicPath={createTopicForCoursePath} fetchCourses={this.fetchCourses}/>;
     }
 
     createUpdateButton(course) {
@@ -120,6 +128,12 @@ class AvailableCourses extends React.Component {
             <DeleteIcon/>
         </IconButton>;
     }
+
+    renderCollapseComponent(course) {
+        return <Collapse in={this.isCourseExpanded(course._links.self.href)} timeout="auto" unmountOnExit>
+            <TopicsInCourseList topicPath={course._links.topics.href} />
+        </Collapse>;
+    };
 
     isCourseExpanded(courseSelfLink) {
         return this.state.expandedCourses.indexOf(courseSelfLink) !== -1;
@@ -189,7 +203,7 @@ class AvailableCourses extends React.Component {
           <div className="AvailableCourses">
               <Fragment>
                   <Typography variant="display1">Available Courses</Typography>
-                  {this.canPerformCRUD() && this.createAddButton()}
+                  {this.canPerformCourseCRUD() && this.createAddButton()}
                   <Paper elevation={1}>
                       <List>{courseNodes}</List>
                   </Paper>
@@ -213,4 +227,4 @@ function mapStateToProps(state) {
     };
 }
 
-export default connect(mapStateToProps)(AvailableCourses);
+export default connect(mapStateToProps)(CoursesView);

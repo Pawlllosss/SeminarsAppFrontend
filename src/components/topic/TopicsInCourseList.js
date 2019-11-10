@@ -1,6 +1,13 @@
 import React from 'react';
 import axios from "axios";
-import {List, ListItem, ListItemText} from "@material-ui/core";
+import {
+    List,
+    ListItem,
+    ListItemText,
+    ListItemSecondaryAction
+} from "@material-ui/core";
+import TopicEditDialog from "./TopicEditDialog";
+import TopicDeleteDialog from "./TopicDeleteDialog";
 
 class TopicsInCourseList extends React.Component {
 
@@ -12,15 +19,15 @@ class TopicsInCourseList extends React.Component {
     }
 
     componentDidMount() {
-        this.fetchTopics(this.props.topicsURL);
+        this.fetchTopics();
     }
 
-    fetchTopics(topicsURL) {
-        return axios.get(topicsURL)
+    fetchTopics = () => {
+        return axios.get(this.props.topicPath)
             .then(response => response.data)
             .then(data => data._embedded !== undefined ? data._embedded.topics : [])
             .then(topics => this.setState({topics: topics}));
-    }
+    };
 
     createTopicNodes() {
         if (this.state.topics.length) {
@@ -36,7 +43,11 @@ class TopicsInCourseList extends React.Component {
     createTopicNodesForCourseWithTopics() {
         return this.state.topics.map(topic => (
             <ListItem key={topic._links.self.href} button>
-                <ListItemText primary={topic.name}/>
+                <ListItemText primary={topic.name} secondary={topic.description}/>
+                <ListItemSecondaryAction>
+                    <TopicEditDialog topic={topic} fetchTopics={this.fetchTopics} />
+                    <TopicDeleteDialog topic={topic} fetchTopics={this.fetchTopics} />
+                </ListItemSecondaryAction>
             </ListItem>
         ));
     }
