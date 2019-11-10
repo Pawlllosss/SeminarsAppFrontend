@@ -1,20 +1,11 @@
 import React, {Fragment} from 'react';
-import {Route, Link, Redirect} from 'react-router-dom'
 import axios from 'axios';
-import {
-    Typography,
-    Button,
-    IconButton,
-    Paper,
-    List,
-    ListItem,
-    ListItemText,
-    ListItemSecondaryAction
-} from "@material-ui/core";
+import {List, Paper, Typography} from "@material-ui/core";
 import {API_URL} from "../../config";
 import getAuthorizationBearerHeader from "../../utils/authentication/BearerTokenSetter";
+import User from "./User";
 
-class Users extends React.Component {
+class UsersView extends React.Component {
 
     constructor(props) {
         super(props);
@@ -24,7 +15,6 @@ class Users extends React.Component {
 
         this.API_BASE_PATH = API_URL;
         this.USER_PATH = 'user/';
-        this.CURRENT_COMPONENT_PATH = '/users';
     }
 
     componentDidMount() {
@@ -39,17 +29,7 @@ class Users extends React.Component {
     getUserNodes() {
         const users = this.state.users;
         const userNodes = users.map(user => (
-           <ListItem
-               key={user._links.self.href}
-               button
-               component={Link}
-               to={user._links.self.href}
-           >
-               <ListItemText
-                   primary = {user.nickname}
-                   secondary = {user.firstName + " " + user.lastName}
-               />
-           </ListItem>
+           <User user={user} />
         ));
         return userNodes;
     }
@@ -70,4 +50,4 @@ class Users extends React.Component {
     }
 }
 
-export default Users;
+export default UsersView;
