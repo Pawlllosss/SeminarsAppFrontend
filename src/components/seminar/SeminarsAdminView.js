@@ -14,6 +14,7 @@ import {
     ListItemText,
     ListItemIcon
 } from '@material-ui/core';
+import getAuthorizationBearerHeader from "../../utils/authentication/BearerTokenSetter";
 
 class SeminarsAdminView extends React.Component {
 
@@ -21,8 +22,10 @@ class SeminarsAdminView extends React.Component {
         super(props);
         this.state = {
             courses: [],
-            expandedCourses: [],
-            checkedCourse: ""
+            checkedCourse: "",
+            topics: [],
+            checkedTopic: "",
+            seminars: []
         };
     }
 
@@ -41,7 +44,7 @@ class SeminarsAdminView extends React.Component {
         const courses = this.state.courses;
 
         return courses.map(course => (
-            <ListItem key={course._links.self.href} button onClick={this.handleToggle(course)}>
+            <ListItem key={course._links.self.href} button onClick={this.handleCourseToggle(course)}>
                 <ListItemText
                     primary={course.name}
                 />
@@ -55,24 +58,98 @@ class SeminarsAdminView extends React.Component {
         ));
     }
 
-    handleToggle = (course) => () => {
+    handleCourseToggle = (course) => () => {
         const selfLink = course._links.self.href;
 
         if (this.state.checkedCourse === selfLink) {
-            this.setState({checkedCourse: ""});
+            this.setState({
+                checkedCourse: "",
+                checkedTopic: "",
+                topics: [],
+                seminars: []
+            });
         } else {
-            //TODO: think about checked topic and seminars!
-            this.setState({checkedCourse: selfLink});
-            //fetch courses and clear previous state
+            this.setState({
+                checkedCourse: selfLink,
+                checkedTopic: "",
+                seminars: []
+            });
+            this.fetchTopics(course);
         }
-    }
+    };
+
+    fetchTopics(course) {
+        return axios.get(course._links.topics.href)
+            .then(response => response.data)
+            .then(data => data._embedded !== undefined ? data._embedded.topics : [])
+            .then(topics => this.setState({topics: topics}));
+    };
 
     isCourseChecked(course) {
         return this.state.checkedCourse === course._links.self.href;
     }
 
+    getTopicNodes() {
+        const topics = this.state.topics;
+
+        return topics.map(topic => (
+            <ListItem key={topic._links.self.href} button onClick={this.handleTopicToggle(topic)}>
+                <ListItemText
+                    primary={topic.name}
+                />
+                <ListItemIcon>
+                    <Checkbox
+                        checked={this.isTopicChecked(topic)}
+                        tabIndex={-1}
+                    />
+                </ListItemIcon>
+            </ListItem>
+        ));
+    }
+
+    handleTopicToggle = (topic) => () => {
+        const selfLink = topic._links.self.href;
+
+        if (this.state.checkedTopic === selfLink) {
+            this.setState({
+                checkedTopic: "",
+                seminars: []
+            });
+        } else {
+            this.setState({
+                checkedTopic: selfLink,
+            });
+            this.fetchSeminars(topic);
+        }
+    };
+
+    isTopicChecked(topic) {
+        return this.state.checkedTopic === topic._links.self.href;
+    }
+
+    fetchSeminars(topic) {
+        return axios.get(topic._links.seminars.href, { headers: getAuthorizationBearerHeader()})
+            .then(response => response.data)
+            .then(data => data._embedded !== undefined ? data._embedded.seminars : [])
+            .then(seminars => this.setState({seminars: seminars}));
+    };
+
+    getSeminarNodes() {
+        const seminars = this.state.seminars;
+
+        return seminars.map(seminar => (
+            <ListItem key={seminar._links.self.href}>
+                <ListItemText
+                    primary={seminar.date}
+                />
+            </ListItem>
+        ));
+    }
+
     render() {
         const courseNodes = this.getCourseNodes();
+        const topicNodes = this.getTopicNodes();
+        const seminarNodes = this.getSeminarNodes();
 
         return (
             <Grid container spacing={2} justify="center" alignItems="center">
@@ -88,8 +165,7 @@ class SeminarsAdminView extends React.Component {
                 <Fragment>
                     <Typography variant="h6">Topics</Typography>
                     <Paper elevation={1}>
-                        <List></List>
-                        {/*<List>{courseNodes}</List>*/}
+                        <List>{topicNodes}</List>
                     </Paper>
                 </Fragment>
                 </Grid>
@@ -97,7 +173,7 @@ class SeminarsAdminView extends React.Component {
                 <Fragment>
                     <Typography variant="h6">Seminars</Typography>
                     <Paper elevation={1}>
-                    <List></List>
+                    <List>{seminarNodes}</List>
                     </Paper>
                 </Fragment>
                 </Grid>
