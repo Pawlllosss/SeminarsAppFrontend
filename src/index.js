@@ -7,20 +7,22 @@ import reduxThunk from 'redux-thunk';
 import {AUTHENTICATED} from "./_actions/authentication/SignInAction";
 import rootReducer from "./_reducers/RootReducer";
 import App from './App';
-import CoursesView from "./components/course/CoursesView";
 import Navbar from "./components/Navbar";
 import * as serviceWorker from './serviceWorker';
 import './index.css';
 
+import CoursesView from "./components/course/CoursesView";
 import SignOut from "./components/authentication/SignOut";
 import SignInForm from "./components/authentication/SignInForm";
 import SignUpForm from "./components/authentication/SignUpForm";
+import SeminarsAdminView from "./components/seminar/SeminarsAdminView";
 import UsersView from "./components/user/UsersView";
 import forAuthenticated from "./components/protection/ForAuthenticated";
 import forNotAuthenticated from "./components/protection/ForNotAuthenticated";
 import forPrivileged from "./components/protection/ForPrivileged";
 import retrieveToken from "./utils/authentication/TokenRetriever";
 import retrieveCurrentUser from "./utils/authentication/CurrentUserRetriever";
+import {CRUD_ALL_SEMINARS_PRIVILEGE, SEMINAR_COMPONENT_PATH} from "./components/seminar/SeminarConstants";
 
 const createStoreWithMiddleware = applyMiddleware(reduxThunk)(createStore);
 const store = createStoreWithMiddleware(rootReducer);
@@ -44,6 +46,7 @@ const routing = (
             <Route path='/signin' component={forNotAuthenticated(SignInForm)} />
             <Route path='/signup' component={forNotAuthenticated(SignUpForm)} />
             <Route path='/courses' component={CoursesView} />
+            <Route path={SEMINAR_COMPONENT_PATH} component={forPrivileged(SeminarsAdminView, CRUD_ALL_SEMINARS_PRIVILEGE)} />
             <Route path='/users' component={forPrivileged(UsersView, 'CRUD_ALL_USERS')} />
             <Route path='/signout' component={forAuthenticated(SignOut)} />
         </Router>
