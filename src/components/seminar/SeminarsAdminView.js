@@ -1,20 +1,20 @@
 import React, {Fragment} from 'react';
 import {API_URL} from "../../config";
 import axios from "axios";
-import {
-    COURSE_API_PATH,
-} from "../course/CourseConstants";
+import {COURSE_API_PATH,} from "../course/CourseConstants";
 import {
     Checkbox,
-    Typography,
-    Paper,
     Grid,
     List,
     ListItem,
+    ListItemIcon,
+    ListItemSecondaryAction,
     ListItemText,
-    ListItemIcon
+    Paper,
+    Typography
 } from '@material-ui/core';
 import getAuthorizationBearerHeader from "../../utils/authentication/BearerTokenSetter";
+import SeminarCreateDialog from "./SeminarCreateDialog";
 
 class SeminarsAdminView extends React.Component {
 
@@ -94,15 +94,19 @@ class SeminarsAdminView extends React.Component {
 
         return topics.map(topic => (
             <ListItem key={topic._links.self.href} button onClick={this.handleTopicToggle(topic)}>
-                <ListItemText
-                    primary={topic.name}
-                />
-                <ListItemIcon>
+                <ListItemIcon >
                     <Checkbox
+                        edge="start"
                         checked={this.isTopicChecked(topic)}
                         tabIndex={-1}
                     />
                 </ListItemIcon>
+                <ListItemText
+                    primary={topic.name}
+                />
+                <ListItemSecondaryAction>
+                    <SeminarCreateDialog topic={topic} />
+                </ListItemSecondaryAction>
             </ListItem>
         ));
     }
@@ -161,7 +165,7 @@ class SeminarsAdminView extends React.Component {
                     </Paper>
                 </Fragment>
                 </Grid>
-                <Grid item xs={3}>
+                <Grid item xs={4}>
                 <Fragment>
                     <Typography variant="h6">Topics</Typography>
                     <Paper elevation={1}>
