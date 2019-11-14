@@ -1,6 +1,6 @@
 import React from 'react';
 import axios from "axios";
-import {Button, Dialog, DialogActions, DialogContent, DialogTitle} from '@material-ui/core';
+import {Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle} from '@material-ui/core';
 import 'date-fns';
 import endOfDay from 'date-fns/endOfDay'
 import format from 'date-fns/format'
@@ -43,10 +43,12 @@ const SeminarCreateDialog = (props) => {
                 Add seminars
             </Button>
             <Dialog open={isOpen} onClose={handleClose} aria-labelledby="form-dialog-title">
-                <DialogTitle id="form-dialog-title">Create topic</DialogTitle>
+                <DialogTitle id="form-dialog-title">Create seminar</DialogTitle>
+                <DialogContentText>
+                    You are going to create a seminar for the following topic: {topicName}.
+                </DialogContentText>
                 <DialogContent>
                     <MuiPickersUtilsProvider utils={DateFnsUtils}>
-
                     <KeyboardDatePicker
                         disableToolbar
                         variant="inline"
