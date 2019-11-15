@@ -13,9 +13,10 @@ import {
     Paper,
     Typography
 } from '@material-ui/core';
-import format from 'date-fns/format'
 import getAuthorizationBearerHeader from "../../utils/authentication/BearerTokenSetter";
 import SeminarCreateDialog from "./SeminarCreateDialog";
+import SeminarEditDialog from "./SeminarEditDialog";
+import {getHumanReadableDate} from "./SeminarUtils";
 
 class SeminarsAdminView extends React.Component {
 
@@ -145,16 +146,13 @@ class SeminarsAdminView extends React.Component {
         return seminars.map(seminar => (
             <ListItem key={seminar._links.self.href}>
                 <ListItemText
-                    primary={this.getHumanReadableDate(seminar)}
+                    primary={getHumanReadableDate(seminar.date)}
                 />
+                <ListItemSecondaryAction>
+                    <SeminarEditDialog seminar={seminar} />
+                </ListItemSecondaryAction>
             </ListItem>
         ));
-    }
-
-    getHumanReadableDate(seminar) {
-        const dateAsString = seminar.date;
-        const parsedDate = new Date(dateAsString);
-        return format(parsedDate, 'dd-MM-yyyy iiii')
     }
 
     render() {
