@@ -15,14 +15,14 @@ import CoursesView from "./components/course/CoursesView";
 import SignOut from "./components/authentication/SignOut";
 import SignInForm from "./components/authentication/SignInForm";
 import SignUpForm from "./components/authentication/SignUpForm";
-import SeminarsAdminView from "./components/seminar/SeminarsAdminView";
+import SeminarsAdminView from "./components/seminar/admin/SeminarsAdminView";
 import UsersView from "./components/user/UsersView";
 import forAuthenticated from "./components/protection/ForAuthenticated";
 import forNotAuthenticated from "./components/protection/ForNotAuthenticated";
 import forPrivileged from "./components/protection/ForPrivileged";
 import retrieveToken from "./utils/authentication/TokenRetriever";
 import retrieveCurrentUser from "./utils/authentication/CurrentUserRetriever";
-import {CRUD_ALL_SEMINARS_PRIVILEGE, SEMINAR_COMPONENT_PATH} from "./components/seminar/SeminarConstants";
+import {CRUD_ALL_SEMINARS_PRIVILEGE, SEMINAR_COMPONENT_PATH} from "./components/seminar/admin/SeminarConstants";
 
 const createStoreWithMiddleware = applyMiddleware(reduxThunk)(createStore);
 const store = createStoreWithMiddleware(rootReducer);

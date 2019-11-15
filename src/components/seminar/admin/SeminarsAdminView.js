@@ -1,7 +1,7 @@
 import React, {Fragment} from 'react';
-import {API_URL} from "../../config";
+import {API_URL} from "../../../config";
 import axios from "axios";
-import {COURSE_API_PATH,} from "../course/CourseConstants";
+import {COURSE_API_PATH,} from "../../course/CourseConstants";
 import {
     Checkbox,
     Grid,
@@ -13,10 +13,10 @@ import {
     Paper,
     Typography
 } from '@material-ui/core';
-import getAuthorizationBearerHeader from "../../utils/authentication/BearerTokenSetter";
+import getAuthorizationBearerHeader from "../../../utils/authentication/BearerTokenSetter";
 import SeminarCreateDialog from "./SeminarCreateDialog";
 import SeminarEditDialog from "./SeminarEditDialog";
-import {getHumanReadableDate} from "./SeminarUtils";
+import {getHumanReadableDate} from "../SeminarUtils";
 
 class SeminarsAdminView extends React.Component {
 

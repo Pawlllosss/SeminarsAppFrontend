@@ -1,20 +1,29 @@
 import React from 'react';
 import axios from "axios";
-import {Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle} from '@material-ui/core';
+import {
+    Button,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogContentText,
+    DialogTitle,
+    IconButton
+} from '@material-ui/core';
 import 'date-fns';
-import endOfDay from 'date-fns/endOfDay'
 import format from 'date-fns/format'
 import DateFnsUtils from '@date-io/date-fns';
 import {KeyboardDatePicker, MuiPickersUtilsProvider} from '@material-ui/pickers';
-import {AddOutlined as AddIcon} from "@material-ui/icons";
-import getAuthorizationBearerHeader from "../../utils/authentication/BearerTokenSetter";
+import {EditOutlined as EditIcon} from "@material-ui/icons";
+import getAuthorizationBearerHeader from "../../../utils/authentication/BearerTokenSetter";
+import {SEMINAR_DATE_ENDPOINT_FORMAT} from "./SeminarConstants";
+import {getHumanReadableDate} from "../SeminarUtils";
 
-const SeminarCreateDialog = (props) => {
+const SeminarEditDialog = (props) => {
 
-    const topicName = props.topic.name;
+    const seminarDate = props.seminar.date;
 
     const [isOpen, setIsOpen] = React.useState(false);
-    const [date, setDate] = React.useState(endOfDay(new Date()));
+    const [date, setDate] = React.useState(new Date(seminarDate));
 
     const handleClickOpen = () => {
         setIsOpen(true);
@@ -30,8 +39,8 @@ const SeminarCreateDialog = (props) => {
 
     const handleSubmit = (event) => {
         event.preventDefault();
-        const endpointDateFormat = format(date, 'yyyy-MM-dd HH:mm:ss');
-        axios.post(props.topic._links.createSeminar.href, {date: endpointDateFormat}, { headers: getAuthorizationBearerHeader()});
+        const endpointDateFormat = format(date, SEMINAR_DATE_ENDPOINT_FORMAT);
+        axios.put(props.seminar._links.update.href, {date: endpointDateFormat}, { headers: getAuthorizationBearerHeader()});
         setIsOpen(false);
     };
 
@@ -39,13 +48,16 @@ const SeminarCreateDialog = (props) => {
 
     return (
         <div style={divStyle}>
-            <Button color="primary" onClick={handleClickOpen} endIcon={<AddIcon />}>
-                Add seminars
-            </Button>
+            <IconButton
+                color="inherit"
+                onClick={handleClickOpen}
+            >
+                <EditIcon/>
+            </IconButton>
             <Dialog open={isOpen} onClose={handleClose} aria-labelledby="form-dialog-title">
                 <DialogTitle id="form-dialog-title">Create seminar</DialogTitle>
                 <DialogContentText>
-                    You are going to create a seminar for the following topic: {topicName}.
+                    You are going to edit seminar at the date: {getHumanReadableDate(seminarDate)}.
                 </DialogContentText>
                 <DialogContent>
                     <MuiPickersUtilsProvider utils={DateFnsUtils}>
@@ -77,4 +89,4 @@ const SeminarCreateDialog = (props) => {
     )
 };
 
-export default SeminarCreateDialog;
+export default SeminarEditDialog;

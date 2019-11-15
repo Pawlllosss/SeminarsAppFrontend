@@ -19,7 +19,7 @@ import {
     People
 } from '@material-ui/icons'
 import hasUserPrivilege from "../utils/authorization/UserPrivilegeChecker";
-import {CRUD_ALL_SEMINARS_PRIVILEGE, SEMINAR_API_PATH, SEMINAR_COMPONENT_PATH} from "./seminar/SeminarConstants";
+import {CRUD_ALL_SEMINARS_PRIVILEGE, SEMINAR_API_PATH, SEMINAR_COMPONENT_PATH} from "./seminar/admin/SeminarConstants";
 
 class Navbar extends React.Component {
 
