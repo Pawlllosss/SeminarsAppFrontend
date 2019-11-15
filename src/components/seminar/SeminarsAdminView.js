@@ -13,8 +13,6 @@ import {
     Paper,
     Typography
 } from '@material-ui/core';
-// import 'date-fns';
-import parse from 'date-fns/parse';
 import format from 'date-fns/format'
 import getAuthorizationBearerHeader from "../../utils/authentication/BearerTokenSetter";
 import SeminarCreateDialog from "./SeminarCreateDialog";
