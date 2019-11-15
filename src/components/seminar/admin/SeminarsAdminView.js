@@ -13,9 +13,10 @@ import {
     Paper,
     Typography
 } from '@material-ui/core';
-import getAuthorizationBearerHeader from "../../../utils/authentication/BearerTokenSetter";
 import SeminarCreateDialog from "./SeminarCreateDialog";
 import SeminarEditDialog from "./SeminarEditDialog";
+import SeminarDeleteDialog from "./SeminarDeleteDialog";
+import getAuthorizationBearerHeader from "../../../utils/authentication/BearerTokenSetter";
 import {getHumanReadableDate} from "../SeminarUtils";
 
 class SeminarsAdminView extends React.Component {
@@ -150,6 +151,7 @@ class SeminarsAdminView extends React.Component {
                 />
                 <ListItemSecondaryAction>
                     <SeminarEditDialog seminar={seminar} />
+                    <SeminarDeleteDialog seminar={seminar} />
                 </ListItemSecondaryAction>
             </ListItem>
         ));
