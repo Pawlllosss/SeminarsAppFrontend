@@ -1,4 +1,5 @@
 export const COURSE_API_PATH = 'course/';
+export const COURSE_CURRENT_USER_PATH = 'currentUser/';
 export const COURSE_COMPONENT_PATH = '/courses';
 export const COURSE_EDITOR_CREATE_PATH = '/courses-editor/create';
 export const COURSE_EDITOR_EDIT_PATH = '/courses-editor/edit';

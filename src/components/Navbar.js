@@ -19,7 +19,11 @@ import {
     People
 } from '@material-ui/icons'
 import hasUserPrivilege from "../utils/authorization/UserPrivilegeChecker";
-import {CRUD_ALL_SEMINARS_PRIVILEGE, SEMINAR_ADMIN_COMPONENT_PATH} from "./seminar/SeminarConstants";
+import {
+    CRUD_ALL_SEMINARS_PRIVILEGE,
+    SEMINAR_ADMIN_COMPONENT_PATH,
+    SEMINAR_USER_COMPONENT_PATH
+} from "./seminar/SeminarConstants";
 
 class Navbar extends React.Component {
 
@@ -58,6 +62,9 @@ class Navbar extends React.Component {
         if (this.canManageSeminars()) {
             const manageSeminarsLinks = [this.createListItem('Manage seminars', SEMINAR_ADMIN_COMPONENT_PATH, MenuBook)];
             links.push(manageSeminarsLinks);
+        } else {
+            const seminarsLinks = [this.createListItem('Seminars', SEMINAR_USER_COMPONENT_PATH, MenuBook)]
+            links.push(seminarsLinks);
         }
 
         const authenticatedUserLinks = [

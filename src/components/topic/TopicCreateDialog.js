@@ -36,7 +36,7 @@ const TopicCreateDialog = (props) => {
     const handleSubmit = (event) => {
         event.preventDefault();
         axios.post(props.createTopicPath, {name, description}, { headers: getAuthorizationBearerHeader()})
-            .finally(() => props.fetchCourses());
+            .finally(() => props.fetchAvailableCourses());
         //TODO: add input validations
         setIsOpen(false);
     };

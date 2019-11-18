@@ -22,7 +22,12 @@ import forNotAuthenticated from "./components/protection/ForNotAuthenticated";
 import forPrivileged from "./components/protection/ForPrivileged";
 import retrieveToken from "./utils/authentication/TokenRetriever";
 import retrieveCurrentUser from "./utils/authentication/CurrentUserRetriever";
-import {CRUD_ALL_SEMINARS_PRIVILEGE, SEMINAR_ADMIN_COMPONENT_PATH} from "./components/seminar/SeminarConstants";
+import {
+    CRUD_ALL_SEMINARS_PRIVILEGE,
+    SEMINAR_ADMIN_COMPONENT_PATH,
+    SEMINAR_USER_COMPONENT_PATH
+} from "./components/seminar/SeminarConstants";
+import SeminarsUserView from "./components/seminar/user/SeminarsUserView";
 
 const createStoreWithMiddleware = applyMiddleware(reduxThunk)(createStore);
 const store = createStoreWithMiddleware(rootReducer);
@@ -50,6 +55,7 @@ const routing = (
             <Route path='/signin' component={forNotAuthenticated(SignInForm)} />
             <Route path='/signup' component={forNotAuthenticated(SignUpForm)} />
             <Route path='/courses' component={CoursesView} />
+            <Route path={SEMINAR_USER_COMPONENT_PATH} component={forAuthenticated(SeminarsUserView)} />
             <Route path={SEMINAR_ADMIN_COMPONENT_PATH} component={forPrivileged(SeminarsAdminView, CRUD_ALL_SEMINARS_PRIVILEGE)} />
             <Route path='/users' component={forPrivileged(UsersView, 'CRUD_ALL_USERS')} />
             <Route path='/signout' component={forAuthenticated(SignOut)} />
