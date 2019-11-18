@@ -15,7 +15,7 @@ import DateFnsUtils from '@date-io/date-fns';
 import {KeyboardDatePicker, MuiPickersUtilsProvider} from '@material-ui/pickers';
 import {EditOutlined as EditIcon} from "@material-ui/icons";
 import getAuthorizationBearerHeader from "../../../utils/authentication/BearerTokenSetter";
-import {SEMINAR_DATE_ENDPOINT_FORMAT} from "./SeminarConstants";
+import {SEMINAR_DATE_ENDPOINT_FORMAT} from "../SeminarConstants";
 import {getHumanReadableDate} from "../SeminarUtils";
 
 const SeminarEditDialog = (props) => {

@@ -202,9 +202,9 @@ class CoursesView extends React.Component {
         const courseNodes = this.getCourseNodes();
 
         return (
-          <div className="AvailableCourses">
+          <div className="AllCourses">
               <Fragment>
-                  <Typography variant="display1">Available Courses</Typography>
+                  <Typography variant="h6">All courses</Typography>
                   {this.canPerformCourseCRUD() && this.createAddButton()}
                   <Paper elevation={1}>
                       <List>{courseNodes}</List>
