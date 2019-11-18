@@ -12,12 +12,18 @@ import {
 import {
     Home,
     Book,
+    MenuBook,
     ExitToApp,
     PermIdentity,
     PersonAdd,
     People
 } from '@material-ui/icons'
 import hasUserPrivilege from "../utils/authorization/UserPrivilegeChecker";
+import {
+    CRUD_ALL_SEMINARS_PRIVILEGE,
+    SEMINAR_ADMIN_COMPONENT_PATH,
+    SEMINAR_USER_COMPONENT_PATH
+} from "./seminar/SeminarConstants";
 
 class Navbar extends React.Component {
 
@@ -47,20 +53,32 @@ class Navbar extends React.Component {
         );
     }
 
-    canManageUsers() {
-        return hasUserPrivilege(this.props.privileges, 'CRUD_ALL_USERS');
-    }
-
     addLinksForAuthenticatedUsers(links) {
         if (this.canManageUsers()) {
-            const manageUsersLinks = [this.createListItem('Users', '/users', People)]
+            const manageUsersLinks = [this.createListItem('Users', '/users', People)];
             links.push(manageUsersLinks);
+        }
+
+        if (this.canManageSeminars()) {
+            const manageSeminarsLinks = [this.createListItem('Manage seminars', SEMINAR_ADMIN_COMPONENT_PATH, MenuBook)];
+            links.push(manageSeminarsLinks);
+        } else {
+            const seminarsLinks = [this.createListItem('Seminars', SEMINAR_USER_COMPONENT_PATH, MenuBook)]
+            links.push(seminarsLinks);
         }
 
         const authenticatedUserLinks = [
             this.createListItem('Sign Out', '/signout', ExitToApp)
         ];
         links.push(authenticatedUserLinks);
+    }
+
+    canManageUsers() {
+        return hasUserPrivilege(this.props.privileges, 'CRUD_ALL_USERS');
+    }
+
+    canManageSeminars() {
+        return hasUserPrivilege(this.props.privileges, CRUD_ALL_SEMINARS_PRIVILEGE);
     }
 
     addLinksForNotAuthenticatedUsers(links) {

@@ -8,6 +8,9 @@ import {
 } from "@material-ui/core";
 import TopicEditDialog from "./TopicEditDialog";
 import TopicDeleteDialog from "./TopicDeleteDialog";
+import connect from "react-redux/es/connect/connect";
+import hasUserPrivilege from "../../utils/authorization/UserPrivilegeChecker";
+import {CRUD_ALL_TOPICS_PRIVILEGE} from "./TopicConstants";
 
 class TopicsInCourseList extends React.Component {
 
@@ -45,11 +48,15 @@ class TopicsInCourseList extends React.Component {
             <ListItem key={topic._links.self.href} button>
                 <ListItemText primary={topic.name} secondary={topic.description}/>
                 <ListItemSecondaryAction>
-                    <TopicEditDialog topic={topic} fetchTopics={this.fetchTopics} />
-                    <TopicDeleteDialog topic={topic} fetchTopics={this.fetchTopics} />
+                    {this.canPerformTopicCRUD() && <TopicEditDialog topic={topic} fetchTopics={this.fetchTopics} /> }
+                    {this.canPerformTopicCRUD() && <TopicDeleteDialog topic={topic} fetchTopics={this.fetchTopics} /> }
                 </ListItemSecondaryAction>
             </ListItem>
         ));
+    }
+
+    canPerformTopicCRUD() {
+        return this.props.authenticated && hasUserPrivilege(this.props.privileges, CRUD_ALL_TOPICS_PRIVILEGE);
     }
 
     createTopicNodeForCourseWithoutTopics() {
@@ -68,4 +75,12 @@ class TopicsInCourseList extends React.Component {
     }
 }
 
-export default TopicsInCourseList;
+function mapStateToProps(state) {
+    return {
+        authenticated: state.authentication.authenticated,
+        nickname: state.authentication.nickname,
+        privileges: state.authentication.privileges
+    };
+}
+
+export default connect(mapStateToProps)(TopicsInCourseList);
