@@ -7,7 +7,7 @@ import {
 } from "../../course/CourseConstants";
 import {
     Button,
-    Checkbox,
+    Checkbox, Collapse,
     Grid, IconButton,
     List,
     ListItem,
@@ -21,7 +21,7 @@ import getAuthorizationBearerHeader from "../../../utils/authentication/BearerTo
 import {getHumanReadableDate} from "../SeminarUtils";
 import {
     AddOutlined as AddIcon,
-    DeleteOutlined as DeleteIcon,
+    DeleteOutlined as DeleteIcon, Edit as EditIcon,
     ExpandLess as UpIcon,
     ExpandMore as DownIcon
 } from "@material-ui/icons";
@@ -38,7 +38,8 @@ class SeminarsUserView extends React.Component {
             checkedTopic: "",
             checkedTopicName: "",
             seminars: [],
-            votes: []
+            votes: [],
+            userVotes: ""
         };
     }
 
@@ -80,14 +81,17 @@ class SeminarsUserView extends React.Component {
                 checkedTopic: "",
                 checkedTopicName: "",
                 topics: [],
-                seminars: []
+                seminars: [],
+                votes: [],
+                userVotes: ""
             });
         } else {
             this.setState({
                 checkedCourse: selfLink,
                 checkedTopic: "",
                 checkedTopicName: "",
-                seminars: []
+                seminars: [],
+                userVotes: course._links.userVotes.href
             });
             this.fetchTopics(course);
             this.fetchVotes(course);
@@ -202,8 +206,6 @@ class SeminarsUserView extends React.Component {
             date: seminarDate
         };
 
-        console.log(vote);
-
         const votes = this.state.votes;
         votes.push(vote);
         this.setState({votes: votes});
@@ -287,6 +289,14 @@ class SeminarsUserView extends React.Component {
         this.setState({votes: votes});
     };
 
+    handleSubmitVotes = (event) => {
+        event.preventDefault();
+        const votes = this.state.votes;
+        const seminarsId = votes.map(vote => vote.id);
+
+        axios.put(this.state.userVotes, {seminarsId: seminarsId}, { headers: getAuthorizationBearerHeader()});
+    };
+
     render() {
         const courseNodes = this.getCourseNodes();
         const topicNodes = this.getTopicNodes();
@@ -326,6 +336,14 @@ class SeminarsUserView extends React.Component {
                     <Paper elevation={1}>
                         <List>{userVotes}</List>
                     </Paper>
+                    <Button
+                        color="primary"
+                        disabled={this.state.checkedCourse === ""}
+                        onClick={this.handleSubmitVotes}
+                        endIcon={<AddIcon />}
+                    >
+                        Send votes
+                    </Button>
                 </Fragment>
             </div>
         );
