@@ -6,6 +6,7 @@ import {
     COURSE_CURRENT_USER_PATH
 } from "../../course/CourseConstants";
 import {
+    Button,
     Checkbox,
     Grid, IconButton,
     List,
@@ -19,9 +20,11 @@ import {
 import getAuthorizationBearerHeader from "../../../utils/authentication/BearerTokenSetter";
 import {getHumanReadableDate} from "../SeminarUtils";
 import {
+    AddOutlined as AddIcon,
     DeleteOutlined as DeleteIcon,
     ExpandLess as UpIcon,
-    ExpandMore as DownIcon} from "@material-ui/icons";
+    ExpandMore as DownIcon
+} from "@material-ui/icons";
 import {Link} from "react-router-dom";
 
 class SeminarsUserView extends React.Component {
@@ -33,6 +36,7 @@ class SeminarsUserView extends React.Component {
             checkedCourse: "",
             topics: [],
             checkedTopic: "",
+            checkedTopicName: "",
             seminars: [],
             votes: []
         };
@@ -74,6 +78,7 @@ class SeminarsUserView extends React.Component {
             this.setState({
                 checkedCourse: "",
                 checkedTopic: "",
+                checkedTopicName: "",
                 topics: [],
                 seminars: []
             });
@@ -81,6 +86,7 @@ class SeminarsUserView extends React.Component {
             this.setState({
                 checkedCourse: selfLink,
                 checkedTopic: "",
+                checkedTopicName: "",
                 seminars: []
             });
             this.fetchTopics(course);
@@ -131,11 +137,13 @@ class SeminarsUserView extends React.Component {
         if (this.state.checkedTopic === selfLink) {
             this.setState({
                 checkedTopic: "",
+                checkedTopicName: "",
                 seminars: []
             });
         } else {
             this.setState({
                 checkedTopic: selfLink,
+                checkedTopicName: topic.name
             });
             this.fetchSeminars(topic);
         }
@@ -160,9 +168,46 @@ class SeminarsUserView extends React.Component {
                 <ListItemText
                     primary={getHumanReadableDate(seminar.date)}
                 />
+                <ListItemSecondaryAction>
+                    <Button
+                        color="primary"
+                        disabled={this.checkIfVoteIsDisabled(seminar)}
+                        onClick={this.handleSeminarVote(seminar)}
+                        endIcon={<AddIcon />}
+                    >
+                        Vote
+                    </Button>
+                </ListItemSecondaryAction>
             </ListItem>
         ));
     }
+
+    checkIfVoteIsDisabled(seminar) {
+        const votes = this.state.votes;
+        const maximumAllowedVotes = 3;
+
+        //TODO: add check for duplicates
+        return votes.length >= maximumAllowedVotes;
+    }
+
+    handleSeminarVote = seminar => () => {
+        const selfLink = seminar._links.self.href;
+        const seminarId = parseInt(selfLink.split("/").pop());
+        const seminarTopicName = this.state.checkedTopicName;
+        const seminarDate = seminar.date;
+
+        const vote = {
+            id: seminarId,
+            topicName: seminarTopicName,
+            date: seminarDate
+        };
+
+        console.log(vote);
+
+        const votes = this.state.votes;
+        votes.push(vote);
+        this.setState({votes: votes});
+    };
 
     getUserVotes() {
         const votes = this.state.votes;
