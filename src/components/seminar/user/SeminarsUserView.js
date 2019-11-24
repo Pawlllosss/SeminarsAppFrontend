@@ -18,9 +18,10 @@ import {
 } from '@material-ui/core';
 import getAuthorizationBearerHeader from "../../../utils/authentication/BearerTokenSetter";
 import {getHumanReadableDate} from "../SeminarUtils";
-import {EditOutlined as EditIcon,
-    ExpandLess as Up,
-    ExpandMore as Down} from "@material-ui/icons";
+import {
+    DeleteOutlined as DeleteIcon,
+    ExpandLess as UpIcon,
+    ExpandMore as DownIcon} from "@material-ui/icons";
 import {Link} from "react-router-dom";
 
 class SeminarsUserView extends React.Component {
@@ -175,27 +176,70 @@ class SeminarsUserView extends React.Component {
                     <IconButton
                         color="inherit"
                         component={Link}
-                        onClick={this.handleClickUp(vote)}
+                        disabled={this.checkIfMoveVoteUpIsDisabled(vote)}
+                        onClick={this.handleClickVoteUp(vote)}
                     >
-                        <Up/>
+                        <UpIcon />
                     </IconButton>
                     <IconButton
                         color="inherit"
                         component={Link}
-                        onClick={this.handleClickDown(vote)}
+                        disabled={this.checkIfMoveVoteDownIsDisabled(vote)}
+                        onClick={this.handleClickVoteDown(vote)}
                     >
-                        <Down />
+                        <DownIcon />
+                    </IconButton>
+                    <IconButton
+                        color="inherit"
+                        component={Link}
+                        onClick={this.handleClickVoteDelete(vote)}
+                    >
+                        <DeleteIcon />
                     </IconButton>
                 </ListItemSecondaryAction>
             </ListItem>
         ));
     }
 
-    handleClickUp = (vote) => () => {
+    checkIfMoveVoteUpIsDisabled(vote) {
+        const votes = this.state.votes;
+        const voteIndex = votes.indexOf(vote);
+
+        return voteIndex <= 0;
+    }
+
+    checkIfMoveVoteDownIsDisabled(vote) {
+        const votes = this.state.votes;
+        const votesSize = votes.length;
+        const voteIndex = votes.indexOf(vote);
+
+        return votesSize - 1 <= voteIndex;
+    }
+
+    handleClickVoteUp = (vote) => () => {
+        const votes = this.state.votes;
+        const voteIndex = votes.indexOf(vote);
+        const earlierVoteIndex = voteIndex - 1;
+
+        [ votes[earlierVoteIndex], votes[voteIndex] ] = [ votes[voteIndex], votes[earlierVoteIndex]];
+        this.setState({votes: votes});
     };
 
+    handleClickVoteDown = (vote) => () => {
+        const votes = this.state.votes;
+        const voteIndex = votes.indexOf(vote);
+        const nextVoteIndex = voteIndex + 1;
 
-    handleClickDown = (vote) => () => {
+        [ votes[nextVoteIndex], votes[voteIndex] ] = [ votes[voteIndex], votes[nextVoteIndex]];
+        this.setState({votes: votes});
+    };
+
+    handleClickVoteDelete = (vote) => () => {
+        const votes = this.state.votes;
+        const voteIndex = votes.indexOf(vote);
+
+        votes.splice(voteIndex, 1);
+        this.setState({votes: votes});
     };
 
     render() {
@@ -233,7 +277,7 @@ class SeminarsUserView extends React.Component {
                     </Grid>
                 </Grid>
                 <Fragment>
-                    <Typography variant="h6">User votes for course</Typography>
+                    <Typography variant="h6">User votes for the course</Typography>
                     <Paper elevation={1}>
                         <List>{userVotes}</List>
                     </Paper>
