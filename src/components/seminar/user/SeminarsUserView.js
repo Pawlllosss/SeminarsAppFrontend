@@ -190,13 +190,22 @@ class SeminarsUserView extends React.Component {
         const votes = this.state.votes;
         const maximumAllowedVotes = 3;
 
-        //TODO: add check for duplicates
-        return votes.length >= maximumAllowedVotes;
+        const seminarId = this.getIdOfSeminar(seminar);
+        const indexOfSeminarInVotes = votes.map(vote => vote.id)
+            .indexOf(seminarId);
+
+        return votes.length >= maximumAllowedVotes || indexOfSeminarInVotes !== -1;
+    }
+
+    getIdOfSeminar(seminar) {
+        const selfLink = seminar._links.self.href;
+        const seminarId = parseInt(selfLink.split("/").pop());
+
+        return seminarId;
     }
 
     handleSeminarVote = seminar => () => {
-        const selfLink = seminar._links.self.href;
-        const seminarId = parseInt(selfLink.split("/").pop());
+        const seminarId = this.getIdOfSeminar(seminar);
         const seminarTopicName = this.state.checkedTopicName;
         const seminarDate = seminar.date;
 
