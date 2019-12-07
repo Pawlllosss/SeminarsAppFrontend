@@ -23,7 +23,6 @@ import {
     ExpandLess
 } from '@material-ui/icons';
 import {API_URL} from "../../config";
-import CourseEditor from "./CourseEditor";
 import getAuthorizationBearerHeader from "../../utils/authentication/BearerTokenSetter";
 import CourseDeleteConfirmation from "./CourseDeleteConfirmation";
 import hasUserPrivilege from "../../utils/authorization/UserPrivilegeChecker";
@@ -39,6 +38,8 @@ import {
 } from "../topic/TopicConstants"
 import TopicsInCourseList from "../topic/TopicsInCourseList";
 import TopicCreateDialog from "../topic/TopicCreateDialog";
+import CourseCreateDialog from "./CourseCreateDialog";
+import CourseEditDialog from "./CourseEditDialog";
 
 class CoursesView extends React.Component {
 
@@ -75,7 +76,7 @@ class CoursesView extends React.Component {
                     />
                     <ListItemSecondaryAction>
                         {this.canPerformTopicCRUD() && this.createAddTopicButton(course)}
-                        {this.canPerformCourseCRUD() && this.createUpdateButton(course)}
+                        {this.canPerformCourseCRUD() && <CourseEditDialog course={course} fetchCourses={this.fetchCourses} />}
                         {this.canPerformCourseCRUD() && this.createDeleteButton(course)}
                     </ListItemSecondaryAction>
                 </ListItem>
@@ -111,16 +112,6 @@ class CoursesView extends React.Component {
         return <TopicCreateDialog createTopicPath={createTopicForCoursePath} fetchCourses={this.fetchCourses}/>;
     }
 
-    createUpdateButton(course) {
-        return <IconButton
-            color="inherit"
-            component={Link}
-            to={COURSE_COMPONENT_PATH + COURSE_EDITOR_EDIT_PATH + '?updateLink=' + course._links.update.href}
-        >
-            <EditIcon/>
-        </IconButton>;
-    }
-
     createDeleteButton(course) {
         return <IconButton
             color="inherit"
@@ -153,34 +144,6 @@ class CoursesView extends React.Component {
         </Button>;
     }
 
-    renderNewCourseEditor = () => {
-        return <CourseEditor onSave={this.saveCourse}/>
-    };
-
-    saveCourse = async (course) => {
-        await axios.post(this.API_BASE_PATH + COURSE_API_PATH, course, { headers: getAuthorizationBearerHeader()});
-        this.fetchCourses();
-        this.props.history.goBack();
-    };
-
-    renderExistingCourseEditor = () => {
-        const queryParameters = queryString.parse(this.props.location.search);
-        const updateLink = queryParameters.updateLink;
-        const course = find(this.state.courses, { _links: {update: {href: updateLink}}});
-
-        if(!course) {
-            return <Redirect to={COURSE_COMPONENT_PATH}/>
-        }
-        return <CourseEditor course={course} onSave={this.editCourse}/>
-    };
-
-    editCourse = async (course) => {
-        const name = course.name;
-        await axios.put(course._links.update.href, {name: name}, { headers: getAuthorizationBearerHeader()});
-        this.fetchCourses();
-        this.props.history.goBack();
-    };
-
     renderCourseDeleteConfirmation = ()  => {
         const queryParameters = queryString.parse(this.props.location.search);
         const deleteLink = queryParameters.deleteLink;
@@ -205,14 +168,10 @@ class CoursesView extends React.Component {
           <div className="AllCourses">
               <Fragment>
                   <Typography variant="h6">All courses</Typography>
-                  {this.canPerformCourseCRUD() && this.createAddButton()}
+                  {this.canPerformCourseCRUD() && <CourseCreateDialog fetchCourses={this.fetchCourses} />}
                   <Paper elevation={1}>
                       <List>{courseNodes}</List>
                   </Paper>
-                  <Route exact path={COURSE_COMPONENT_PATH + COURSE_EDITOR_CREATE_PATH}
-                         render={this.renderNewCourseEditor}/>
-                  <Route path={COURSE_COMPONENT_PATH + COURSE_EDITOR_EDIT_PATH}
-                         render={this.renderExistingCourseEditor}/>
                   <Route path={COURSE_COMPONENT_PATH + COURSE_DELETE_CONFIRMATION_PATH}
                          render={this.renderCourseDeleteConfirmation}/>
               </Fragment>
