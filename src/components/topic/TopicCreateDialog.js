@@ -45,13 +45,9 @@ const TopicCreateDialog = (props) => {
 
     return (
         <div style={divStyle}>
-            <IconButton
-            color="inherit"
-            component={Link}
-            onClick={handleClickOpen}
-            >
-            <AddIcon />
-        </IconButton>
+            <Button color="primary" onClick={handleClickOpen} endIcon={<AddIcon />}>
+                Add topic
+            </Button>
             <Dialog open={isOpen} onClose={handleClose} aria-labelledby="form-dialog-title">
                 <DialogTitle id="form-dialog-title">Create topic</DialogTitle>
                 <DialogContent>
