@@ -1,14 +1,12 @@
 import React, {Fragment} from 'react';
 import {API_URL} from "../../../config";
 import axios from "axios";
-import {
-    COURSE_API_PATH,
-    COURSE_CURRENT_USER_PATH
-} from "../../course/CourseConstants";
+import {COURSE_API_PATH, COURSE_CURRENT_USER_PATH} from "../../course/CourseConstants";
 import {
     Button,
-    Checkbox, Collapse,
-    Grid, IconButton,
+    Checkbox,
+    Grid,
+    IconButton,
     List,
     ListItem,
     ListItemIcon,
@@ -21,7 +19,7 @@ import getAuthorizationBearerHeader from "../../../utils/authentication/BearerTo
 import {getHumanReadableDate} from "../SeminarUtils";
 import {
     AddOutlined as AddIcon,
-    DeleteOutlined as DeleteIcon, Edit as EditIcon,
+    DeleteOutlined as DeleteIcon,
     ExpandLess as UpIcon,
     ExpandMore as DownIcon
 } from "@material-ui/icons";

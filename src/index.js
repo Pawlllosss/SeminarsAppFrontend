@@ -6,7 +6,6 @@ import {Route, BrowserRouter as Router} from 'react-router-dom'
 import reduxThunk from 'redux-thunk';
 import {AUTHENTICATED, UNAUTHENTICATED} from "./_actions/authentication/SignInAction";
 import rootReducer from "./_reducers/RootReducer";
-import App from './App';
 import Navbar from "./components/Navbar";
 import * as serviceWorker from './serviceWorker';
 import './index.css';
@@ -24,10 +23,11 @@ import retrieveToken from "./utils/authentication/TokenRetriever";
 import retrieveCurrentUser from "./utils/authentication/CurrentUserRetriever";
 import {
     CRUD_ALL_SEMINARS_PRIVILEGE,
-    SEMINAR_ADMIN_COMPONENT_PATH,
+    SEMINAR_ADMIN_COMPONENT_PATH, SEMINAR_USER_ASSIGNED_COMPONENT_PATH,
     SEMINAR_USER_COMPONENT_PATH
 } from "./components/seminar/SeminarConstants";
 import SeminarsUserView from "./components/seminar/user/SeminarsUserView";
+import AssignedSeminarsView from "./components/seminar/user/AssignedSeminarsView";
 
 const createStoreWithMiddleware = applyMiddleware(reduxThunk)(createStore);
 const store = createStoreWithMiddleware(rootReducer);
@@ -51,11 +51,12 @@ const routing = (
     <Provider store={store}>
         <Router>
             <Navbar/>
-            <Route exact path='/' component={App} />
+            <Route exact path='/' component={CoursesView} />
             <Route path='/signin' component={forNotAuthenticated(SignInForm)} />
             <Route path='/signup' component={forNotAuthenticated(SignUpForm)} />
             <Route path='/courses' component={CoursesView} />
             <Route path={SEMINAR_USER_COMPONENT_PATH} component={forAuthenticated(SeminarsUserView)} />
+            <Route path={SEMINAR_USER_ASSIGNED_COMPONENT_PATH} component={forAuthenticated(AssignedSeminarsView)} />
             <Route path={SEMINAR_ADMIN_COMPONENT_PATH} component={forPrivileged(SeminarsAdminView, CRUD_ALL_SEMINARS_PRIVILEGE)} />
             <Route path='/users' component={forPrivileged(UsersView, 'CRUD_ALL_USERS')} />
             <Route path='/signout' component={forAuthenticated(SignOut)} />

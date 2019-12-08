@@ -10,9 +10,9 @@ import {
     Typography
 } from '@material-ui/core';
 import {
-    Home,
     Book,
     MenuBook,
+    Accessibility,
     ExitToApp,
     PermIdentity,
     PersonAdd,
@@ -21,7 +21,7 @@ import {
 import hasUserPrivilege from "../utils/authorization/UserPrivilegeChecker";
 import {
     CRUD_ALL_SEMINARS_PRIVILEGE,
-    SEMINAR_ADMIN_COMPONENT_PATH,
+    SEMINAR_ADMIN_COMPONENT_PATH, SEMINAR_USER_ASSIGNED_COMPONENT_PATH,
     SEMINAR_USER_COMPONENT_PATH
 } from "./seminar/SeminarConstants";
 
@@ -29,7 +29,6 @@ class Navbar extends React.Component {
 
     navbarLinks() {
         let links = [
-            this.createListItem('Home', '/', Home),
             this.createListItem('Courses', '/courses', Book)
         ];
 
@@ -63,7 +62,10 @@ class Navbar extends React.Component {
             const manageSeminarsLinks = [this.createListItem('Manage seminars', SEMINAR_ADMIN_COMPONENT_PATH, MenuBook)];
             links.push(manageSeminarsLinks);
         } else {
-            const seminarsLinks = [this.createListItem('Seminars', SEMINAR_USER_COMPONENT_PATH, MenuBook)]
+            const seminarsLinks = [
+                this.createListItem('Seminars', SEMINAR_USER_COMPONENT_PATH, MenuBook),
+                this.createListItem('My seminars', SEMINAR_USER_ASSIGNED_COMPONENT_PATH, Accessibility),
+            ];
             links.push(seminarsLinks);
         }
 
