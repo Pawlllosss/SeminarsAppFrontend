@@ -96,7 +96,7 @@ class Navbar extends React.Component {
             return;
         }
         const nickname = this.props.nickname;
-        return <p>{nickname}</p>;
+        return <p style={{fontWeight: 'bold'}}>{nickname}</p>;
     }
 
     render() {

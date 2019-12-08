@@ -40,7 +40,7 @@ class UsersView extends React.Component {
         return (
             <div className="Users">
                 <Fragment>
-                    <Typography variant="display1">Users</Typography>
+                    <Typography variant="h3" align="center">Users</Typography>
                     <Paper elevation={1}>
                         <List>{userNodes}</List>
                     </Paper>

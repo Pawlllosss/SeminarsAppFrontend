@@ -167,7 +167,7 @@ class CoursesView extends React.Component {
         return (
           <div className="AllCourses">
               <Fragment>
-                  <Typography variant="h6">All courses</Typography>
+                  <Typography variant="h3" align="center">All courses</Typography>
                   {this.canPerformCourseCRUD() && <CourseCreateDialog fetchCourses={this.fetchCourses} />}
                   <Paper elevation={1}>
                       <List>{courseNodes}</List>
