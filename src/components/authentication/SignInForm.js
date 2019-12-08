@@ -46,7 +46,6 @@ class SignInForm extends React.Component {
                         fullWidth
                     />
                     <TextField
-                        autoFocus
                         margin="dense"
                         id="password"
                         label="Password"
