@@ -132,18 +132,6 @@ class CoursesView extends React.Component {
         return this.state.expandedCourses.indexOf(courseSelfLink) !== -1;
     }
 
-    createAddButton() {
-        return <Button
-            variant="fab"
-            color="secondary"
-            aria-label="add"
-            component={Link}
-            to={COURSE_COMPONENT_PATH + COURSE_EDITOR_CREATE_PATH}
-        >
-            <AddIcon/>
-        </Button>;
-    }
-
     renderCourseDeleteConfirmation = ()  => {
         const queryParameters = queryString.parse(this.props.location.search);
         const deleteLink = queryParameters.deleteLink;
