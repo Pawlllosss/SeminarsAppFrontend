@@ -57,7 +57,7 @@ const CourseEditDialog = (props) => {
                 Edit course
             </Button>
             <Dialog open={isOpen} onClose={handleClose} aria-labelledby="form-dialog-title">
-                <DialogTitle id="form-dialog-title">Create course</DialogTitle>
+                <DialogTitle id="form-dialog-title">Edit course</DialogTitle>
                 <DialogContentText>
                     You are going to edit course {courseName}.
                 </DialogContentText>
