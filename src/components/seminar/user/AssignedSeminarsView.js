@@ -45,7 +45,7 @@ class AssignedSeminarsView extends React.Component {
 
         return (
             <Fragment>
-                <Typography variant="h6">Seminars assigned to you</Typography>
+                <Typography variant="h3" align="center">Seminars assigned to you</Typography>
                 <Paper elevation={1}>
                     <List>
                         {seminarNodes}

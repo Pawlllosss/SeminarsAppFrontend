@@ -339,7 +339,7 @@ class SeminarsUserView extends React.Component {
                     </Grid>
                 </Grid>
                 <Fragment>
-                    <Typography variant="h6">User votes for the course</Typography>
+                    <Typography variant="h4" align="center">User votes for the course</Typography>
                     <Paper elevation={1}>
                         <List>{userVotes}</List>
                     </Paper>
