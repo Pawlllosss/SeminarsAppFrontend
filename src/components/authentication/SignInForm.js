@@ -33,7 +33,7 @@ class SignInForm extends React.Component {
         return (
             <div className="form" style={{display: 'flex',  justifyContent:'center', alignItems:'center'}}>
                 <div className="container" style={{width: "70%"}}>
-                    <Typography variant="h4" align="center">Sign In</Typography>
+                    <Typography variant="h3" align="center">Sign In</Typography>
                     <TextField
                         autoFocus
                         margin="dense"
