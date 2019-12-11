@@ -55,7 +55,7 @@ const SeminarCreateDialog = (props) => {
                         format="dd/MM/yyyy"
                         margin="normal"
                         id="date-picker-inline"
-                        label="Date picker inline"
+                        label="Date"
                         value={date}
                         onChange={handleDateChange}
                         KeyboardButtonProps={{
