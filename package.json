@@ -27,13 +27,16 @@
     "redux": "^4.0.4",
     "redux-form": "^8.2.6",
     "redux-thunk": "^2.3.0",
+    "serve": "^11.2.0",
     "yup": "^0.27.0"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "dev": "react-scripts start",
+    "start": "serve -s build",
     "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject",
+    "heroku-postbuild": "npm run build"
   },
   "eslintConfig": {
     "extends": "react-app"
